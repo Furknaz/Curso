@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KODE AGENCY - Curso de Empréstimo Consignado</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Streaming Platform Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <div class="logo-icon">K</div>
+          <div class="logo-text">KODE AGENCY</div>
+        </div>
+        <nav class="main-nav">
+          <ul>
+            <li><a href="#home" class="active">Início</a></li>
+            <li><a href="#courses">Cursos</a></li>
+            <li><a href="#categories">Categorias</a></li>
+            <li><a href="#progress">Meu Progresso</a></li>
+          </ul>
+        </nav>
+        <div class="header-actions">
+          <div class="search-container">
+            <input
+              type="text"
+              placeholder="Buscar cursos..."
+              class="search-bar"
+            />
+          </div>
+          <div class="user-profile">U</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-background">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <div class="hero-info">
+            <h2 class="hero-title">Curso Completo de Empréstimo Consignado</h2>
+            <p class="hero-description">
+              Domine todas as técnicas e estratégias para se tornar um
+              especialista em empréstimos consignados. 7 módulos completos com
+              aulas práticas e cases reais do mercado.
+            </p>
+            <div class="hero-stats">
+              <span class="stat-item">★ 4.9/5</span>
+              <span class="stat-item">◉ 2.847 alunos</span>
+              <span class="stat-item">■ 7 módulos</span>
+              <span class="stat-item">○ 12h de conteúdo</span>
+            </div>
+            <div class="hero-actions">
+              <button class="btn-primary" onclick="scrollToCourses()">
+                ▶ Começar Agora
+              </button>
+              <button class="btn-secondary" onclick="openModal('modulo1')">
+                ℹ Mais Informações
+              </button>
+            </div>
+          </div>
+          <div class="hero-preview">
+            <div class="preview-card">
+              <div class="preview-image">
+                <span class="play-icon">▶</span>
+              </div>
+              <h3>Preview do Curso</h3>
+              <p>Veja uma amostra do que você vai aprender</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main class="main-container">
+      <!-- Course Categories Section -->
+      <section class="courses-section" id="courses">
+        <div class="section-header">
+          <h2 class="section-title">Módulos do Curso</h2>
+          <div class="category-filters">
+            <button class="filter-btn active" data-category="all">Todos</button>
+            <button class="filter-btn" data-category="fundamentos">
+              Fundamentos
+            </button>
+            <button class="filter-btn" data-category="pratica">Prática</button>
+            <button class="filter-btn" data-category="avancado">
+              Avançado
+            </button>
+          </div>
+        </div>
+
+        <!-- Modules Grid -->
+        <div class="modules-grid">
+          <!-- Module 1 -->
+          <div
+            class="streaming-card"
+            data-category="fundamentos"
+            onclick="openModal('modulo1')"
+          >
+            <div
+              class="card-image"
+              style="
+                background-image: url('images/Objeções.png');
+                background-size: cover;
+                background-position: center;
+              "
+            >
+              <div class="module-badge">MÓDULO 1</div>
+              <div class="card-overlay">
+                <button class="play-button">▶</button>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="card-content">
+              <h3 class="card-title">Contornar Objeções</h3>
+              <p class="card-description">
+                Técnicas avançadas para superar resistências
+              </p>
+              <div class="card-meta">
+                <span class="duration">○ 1h 45min</span>
+                <span class="lessons">■ 4 aulas</span>
+                <span class="rating">★ 4.8</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Module 2 -->
+          <div
+            class="streaming-card"
+            data-category="pratica"
+            onclick="openModal('modulo2')"
+          >
+            <div
+              class="card-image"
+              style="
+                background-image: url('images/Tecnica.png');
+                background-size: cover;
+                background-position: center;
+              "
+            >
+              <div class="module-badge">MÓDULO 2</div>
+              <div class="card-overlay">
+                <button class="play-button">▶</button>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="card-content">
+              <h3 class="card-title">Técnica de Vendas</h3>
+              <p class="card-description">Habilidades fundamentais de vendas</p>
+              <div class="card-meta">
+                <span class="duration">○ 2h 10min</span>
+                <span class="lessons">■ 4 aulas</span>
+                <span class="rating">★ 4.9</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Module 3 -->
+          <div
+            class="streaming-card"
+            data-category="pratica"
+            onclick="openModal('modulo3')"
+          >
+            <div
+              class="card-image"
+              style="
+                background-image: url('images/Persuasão.png');
+                background-size: cover;
+                background-position: center;
+              "
+            >
+              <div class="module-badge">MÓDULO 3</div>
+              <div class="card-overlay">
+                <button class="play-button">▶</button>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="card-content">
+              <h3 class="card-title">Técnicas de Persuasão</h3>
+              <p class="card-description">Arte da persuasão ética aplicada</p>
+              <div class="card-meta">
+                <span class="duration">○ 1h 30min</span>
+                <span class="lessons">■ 4 aulas</span>
+                <span class="rating">★ 4.7</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Module 4 -->
+          <div
+            class="streaming-card"
+            data-category="avancado"
+            onclick="openModal('modulo4')"
+          >
+            <div
+              class="card-image"
+              style="
+                background-image: url('images/Produtos.png');
+                background-size: cover;
+                background-position: center;
+              "
+            >
+              <div class="module-badge">MÓDULO 4</div>
+              <div class="card-overlay">
+                <button class="play-button">▶</button>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="card-content">
+              <h3 class="card-title">Produtos</h3>
+              <p class="card-description">
+                Conhecimento dos produtos consignados
+              </p>
+              <div class="card-meta">
+                <span class="duration">○ 2h 20min</span>
+                <span class="lessons">■ 3 aulas</span>
+                <span class="rating">★ 4.9</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Module 5 -->
+          <div
+            class="streaming-card"
+            data-category="avancado"
+            onclick="openModal('modulo5')"
+          >
+            <div
+              class="card-image"
+              style="
+                background-image: url('images/Mapeamento.png');
+                background-size: cover;
+                background-position: center;
+              "
+            >
+              <div class="module-badge">MÓDULO 5</div>
+              <div class="card-overlay">
+                <button class="play-button">▶</button>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="card-content">
+              <h3 class="card-title">Mapeamento de Meta</h3>
+              <p class="card-description">Planejamento estratégico pessoal</p>
+              <div class="card-meta">
+                <span class="duration">○ 1h 55min</span>
+                <span class="lessons">■ 3 aulas</span>
+                <span class="rating">★ 4.8</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Module 6 -->
+          <div
+            class="streaming-card"
+            data-category="avancado"
+            onclick="openModal('modulo6')"
+          >
+            <div
+              class="card-image"
+              style="
+                background-image: url('images/Digitação.png');
+                background-size: cover;
+                background-position: center;
+              "
+            >
+              <div class="module-badge">MÓDULO 6</div>
+              <div class="card-overlay">
+                <button class="play-button">▶</button>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="card-content">
+              <h3 class="card-title">Digitação Banco e Ecorban</h3>
+              <p class="card-description">Sistemas bancários e plataformas</p>
+              <div class="card-meta">
+                <span class="duration">○ 1h 40min</span>
+                <span class="lessons">■ 4 aulas</span>
+                <span class="rating">★ 4.6</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Module 7 -->
+          <div
+            class="streaming-card"
+            data-category="avancado"
+            onclick="openModal('modulo7')"
+          >
+            <div
+              class="card-image"
+              style="
+                background-image: url('images/Esteira.png');
+                background-size: cover;
+                background-position: center;
+              "
+            >
+              <div class="module-badge">MÓDULO 7</div>
+              <div class="card-overlay">
+                <button class="play-button">▶</button>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="card-content">
+              <h3 class="card-title">Acompanhamento de Esteira</h3>
+              <p class="card-description">
+                Gerenciamento do processo de aprovação
+              </p>
+              <div class="card-meta">
+                <span class="duration">○ 2h 30min</span>
+                <span class="lessons">■ 4 aulas</span>
+                <span class="rating">★ 5.0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal Structure -->
+    <div id="moduleModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div class="modal-header">
+          <img id="modalImage" src="" alt="" />
+          <div class="modal-info">
+            <h1 id="modalTitle"></h1>
+            <div class="modal-meta">
+              <span id="modalYear">2025</span>
+              <span class="age-rating">A14</span>
+              <span class="genre">Série</span>
+              <span class="category">Educação</span>
+              <span class="category">Vendas</span>
+            </div>
+            <p id="modalDescription"></p>
+            <button
+              id="accessButton"
+              class="access-btn"
+              onclick="accessModule()"
+            >
+              Vamos lá <span class="arrow">▶</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Category filter functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        const filterButtons = document.querySelectorAll(".filter-btn");
+        const streamingCards = document.querySelectorAll(".streaming-card");
+
+        filterButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            // Remove active class from all buttons
+            filterButtons.forEach((btn) => btn.classList.remove("active"));
+            // Add active class to clicked button
+            this.classList.add("active");
+
+            const category = this.getAttribute("data-category");
+
+            streamingCards.forEach((card) => {
+              if (
+                category === "all" ||
+                card.getAttribute("data-category") === category
+              ) {
+                card.style.display = "block";
+                card.style.animation = "fadeInUp 0.5s ease forwards";
+              } else {
+                card.style.display = "none";
+              }
+            });
+          });
+        });
+
+        // Add CSS animation for cards
+        const style = document.createElement("style");
+        style.textContent = `
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(30px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+            `;
+        document.head.appendChild(style);
+      });
+
+      // Dados dos módulos com sinopses
+      const moduleData = {
+        modulo1: {
+          title: "Módulo 1: Contornar Objeções",
+          description:
+            "Aprenda técnicas avançadas para superar objeções de clientes e transformar resistência em oportunidades de venda. Domine estratégias psicológicas e argumentativas para aumentar sua taxa de conversão.",
+          image: "images/Objeções.png",
+          url: "modulo1.html",
+        },
+        modulo2: {
+          title: "Módulo 2: Técnica de Vendas",
+          description:
+            "Desenvolva habilidades fundamentais de vendas, desde a prospecção até o fechamento. Aprenda metodologias comprovadas para identificar necessidades do cliente e apresentar soluções eficazes.",
+          image: "images/Tecnica.png",
+          url: "modulo2.html",
+        },
+        modulo3: {
+          title: "Módulo 3: Técnicas de Persuasão",
+          description:
+            "Domine a arte da persuasão ética aplicada às vendas. Compreenda os gatilhos mentais e técnicas de influência que levam clientes a tomar decisões favoráveis de compra.",
+          image: "images/Persuasão.png",
+          url: "modulo3.html",
+        },
+        modulo4: {
+          title: "Módulo 4: Produtos",
+          description:
+            "Conheça profundamente todos os produtos de empréstimo consignado disponíveis. Aprenda características, vantagens e como posicionar cada produto para diferentes perfis de cliente.",
+          image: "images/Produtos.png",
+          url: "modulo4.html",
+        },
+        modulo5: {
+          title: "Módulo 5: Mapeamento de Metas",
+          description:
+            "Estabeleça metas claras e alcançáveis para sua carreira em vendas. Aprenda metodologias de planejamento estratégico pessoal e técnicas de acompanhamento de resultados.",
+          image: "images/Mapeamento.png",
+          url: "modulo5.html",
+        },
+        modulo6: {
+          title: "Módulo 6: Digitação Banco e Ecorban",
+          description:
+            "Domine os sistemas bancários e plataformas digitais essenciais para processar empréstimos consignados. Aprenda fluxos operacionais e boas práticas de digitação e conferência.",
+          image: "images/Digitação.png",
+          url: "modulo6.html",
+        },
+        modulo7: {
+          title: "Módulo 7: Acompanhamento de Esteira",
+          description:
+            "Aprenda a gerenciar e acompanhar todo o processo de aprovação de empréstimos. Desenvolva habilidades para monitorar status, resolver pendências e garantir a finalização das operações.",
+          image: "images/Esteira.png",
+          url: "modulo7.html",
+        },
+      };
+
+      let currentModule = "";
+
+      function openModal(moduleId) {
+        const module = moduleData[moduleId];
+        if (module) {
+          currentModule = moduleId;
+          document.getElementById("modalTitle").textContent = module.title;
+          document.getElementById("modalDescription").textContent =
+            module.description;
+          document.getElementById("modalImage").src = module.image;
+          document.getElementById("moduleModal").style.display = "block";
+          document.body.style.overflow = "hidden";
+        }
+      }
+
+      function closeModal() {
+        document.getElementById("moduleModal").style.display = "none";
+        document.body.style.overflow = "auto";
+      }
+
+      function accessModule() {
+        if (currentModule && moduleData[currentModule]) {
+          window.location.href = moduleData[currentModule].url;
+        }
+      }
+
+      // Fechar modal ao clicar fora dele
+      window.onclick = function (event) {
+        const modal = document.getElementById("moduleModal");
+        if (event.target === modal) {
+          closeModal();
+        }
+      };
+
+      // Fechar modal com tecla ESC
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          closeModal();
+        }
+      });
+
+      // Função para rolar até a seção de cursos
+      function scrollToCourses() {
+        const coursesSection = document.getElementById("courses");
+        if (coursesSection) {
+          coursesSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      }
+    </script>
+  </body>
+</html>
