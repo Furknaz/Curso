@@ -1312,15 +1312,16 @@ body {
 
 /* Lesson/Content Page Styles */
 .lesson-container {
-  padding: 40px 50px;
-  max-width: 800px;
+  padding: 20px 30px;
+  max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
 }
 
 .lesson-title {
   font-size: 36px;
   font-weight: bold;
-  color: #e50914;
+  color: white;
   margin-bottom: 10px;
 }
 
@@ -1333,7 +1334,7 @@ body {
 
 .lesson-content h3 {
   font-size: 24px;
-  color: #e50914;
+  color: white;
   margin-top: 40px;
 }
 
@@ -1541,3 +1542,217 @@ body {
     min-height: 300px;
   }
 }
+
+/* Two-column lesson layout with sticky video */
+.video-layout {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 12px 16px;
+}
+
+.video-layout .two-column {
+  display: flex;
+  gap: 36px;
+  align-items: flex-start;
+  align-content: start;
+}
+
+.video-layout .left-column {
+  flex: 1 1 60%;
+  min-width: 0; /* allow text truncation and wrapping inside flex */
+}
+
+.video-layout .right-column {
+  flex: 0 0 40%;
+  max-width: 480px;
+  align-self: flex-start;
+  position: sticky;
+  top: 90px; /* offset for fixed header */
+}
+
+.video-container iframe {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16/9;
+  max-height: calc(100vh - 180px); /* fit inside 1080p viewport with header */
+  border: 0;
+  border-radius: 8px;
+  display: block;
+}
+
+/* Video controls (toggle) positioned above the video to avoid overlapping title */
+.video-container {
+  position: relative;
+}
+.video-container .vc-controls {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px; /* space between button and video */
+}
+.fp-toggle {
+  background: linear-gradient(135deg, #e50914, #b20710);
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  font-size: 1rem;
+}
+.fp-toggle:active,
+.fp-toggle:focus {
+  outline: none;
+  transform: translateY(1px);
+}
+
+@media (max-width: 900px) {
+  .video-container .vc-controls {
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+  .fp-toggle {
+    padding: 9px 14px;
+    font-size: 0.95rem;
+  }
+}
+
+/* Responsive: stack columns on narrow screens */
+@media (max-width: 900px) {
+  .video-layout {
+    padding: 20px;
+  }
+
+  .video-layout .two-column {
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .video-layout .right-column {
+    position: static;
+    width: 100%;
+  }
+}
+
+/* Floating player styles */
+.floating-player {
+  position: fixed;
+  /* default placement (can be overridden by inline left/top set from JS) */
+  right: 24px;
+  bottom: 24px;
+  width: 480px;
+  height: 270px;
+  background: #0f0f0f;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  /* allow controls placed outside .fp-content to remain visible */
+  overflow: visible;
+  z-index: 2000;
+  resize: both;
+  min-width: 320px;
+  min-height: 180px;
+  display: none; /* hidden until user clicks Flutuar */
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+
+.floating-player .fp-header {
+  height: 36px;
+  background: linear-gradient(90deg, rgba(229,9,20,0.12), rgba(0,0,0,0.2));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  cursor: grab;
+}
+
+.fp-toggle {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* controls overlay inside docked video */
+.video-container { position: relative; }
+/* unified controls styling for dock and floating player */
+.vc-controls {
+  position: static; /* keep in document flow */
+  display: flex;
+  justify-content: center; /* center the button below the video */
+  margin-top: 12px; /* space between video and button */
+  z-index: auto;
+}
+.vc-controls .fp-toggle { background: rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.12); padding: 8px 12px; font-weight: 700; font-size: 0.95rem; }
+
+.floating-player .fp-title { color: #fff; font-weight: 700; }
+.floating-player .fp-controls { display:flex; gap:8px; }
+.floating-player .fp-close { background:transparent; border:none; color:#fff; font-size:20px; cursor:pointer; }
+
+.floating-player .fp-content {
+  width: 100%;
+  height: calc(100% - 36px);
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.floating-player .fp-content iframe {
+  width: 100%;
+  flex: 1 1 auto;
+  height: auto;
+  border: 0;
+}
+
+/* When controls are moved inside the floating player, keep them centered below the iframe */
+.floating-player .vc-controls {
+  /* keep small internal padding inside floating player */
+  padding: 8px 12px;
+  background: transparent;
+}
+.floating-player .vc-controls .fp-toggle {
+  padding: 8px 12px;
+  font-size: 0.95rem;
+}
+
+/* when controls are placed as a sibling of .fp-content (outside the iframe),
+   center them and give slight separation */
+.floating-player > .vc-controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+  padding-bottom: 8px;
+}
+
+@media (max-width: 900px) {
+  .floating-player { right: 12px; bottom: 12px; width: 100%; height: 240px; left: 0; border-radius: 6px; }
+}
+
+/* bottom-left resize handle */
+.fp-resize-handle {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 8px;
+  z-index: 2100;
+  display: block;
+}
+
+.fp-resize-handle::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(45deg, rgba(255,255,255,0.12) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,0.12) 25%, transparent 25%);
+  background-size: 8px 8px;
+  background-position: center;
+  opacity: 0.9;
+}
+
+.fp-resize-bl { left: 8px; bottom: 8px; cursor: nesw-resize; }
+.fp-resize-br { right: 8px; bottom: 8px; cursor: nwse-resize; }

@@ -36,6 +36,205 @@
         </div>
 
         <a href="modulo3.html" class="back-link">Voltar aos Episódios</a>
+        <div class="video-container">
+            <iframe id="lessonIframe" width="680" height="400" src="https://www.youtube.com/embed/dzfS_W4yX-A?si=7KbVn9wYt4bUMXrB" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <div class="vc-controls">
+                <button class="fp-toggle" id="fpToggleDock" aria-label="Alternar Janela Flutuante">Janela Flutuante</button>
+            </div>
+        </div>
+
+        <div class="floating-player" id="floatingPlayer" role="dialog" aria-label="Player de vídeo">
+            <div class="fp-header" id="fpHeader">
+                <span class="fp-title">Player</span>
+                <div class="fp-controls"></div>
+            </div>
+            <div class="fp-content"></div>
+            <div class="fp-resize-handle fp-resize-bl" id="fpResizeHandleBL" aria-hidden="true"></div>
+            <div class="fp-resize-handle fp-resize-br" id="fpResizeHandleBR" aria-hidden="true"></div>
+        </div>
+
+        <script>
+            (function(){
+                <script>
+                    (function(){
+                        if(document.querySelector('.video-layout')) return;
+                        const container = document.querySelector('.lesson-container');
+                        if(!container) return;
+                        const section = document.createElement('section');
+                        section.className = 'video-layout';
+                        const two = document.createElement('div'); two.className = 'two-column';
+                        const left = document.createElement('div'); left.className = 'left-column';
+                        const right = document.createElement('aside'); right.className = 'right-column';
+
+                        const title = container.querySelector('.lesson-title'); if(title) left.appendChild(title);
+                        const desc = container.querySelector('.lesson-description'); if(desc) left.appendChild(desc);
+                        const content = container.querySelector('.lesson-content'); if(content) left.appendChild(content);
+                        const back = container.querySelector('.back-link'); if(back) left.appendChild(back);
+                        const video = container.querySelector('.video-container'); if(video) right.appendChild(video);
+
+                        two.appendChild(left); two.appendChild(right); section.appendChild(two);
+                        container.insertBefore(section, container.firstChild);
+                    })();
+                </script>
+                const fp = document.getElementById('floatingPlayer');
+                const header = document.getElementById('fpHeader');
+                const fpToggleDock = document.getElementById('fpToggleDock');
+                const dockContainer = document.querySelector('.video-container');
+                let vcControls = dockContainer.querySelector('.vc-controls');
+                const fpContent = document.querySelector('.floating-player .fp-content');
+                let isFloating = false;
+
+                function activateFloating() {
+                    const iframe = document.getElementById('lessonIframe');
+                    if (iframe && fpContent && dockContainer) {
+                        const rect = iframe.getBoundingClientRect();
+                        fp.style.display = 'block';
+                        fp.style.right = 'auto';
+                        fp.style.bottom = 'auto';
+                        const controlsExtra = (vcControls && vcControls.offsetHeight) ? (vcControls.offsetHeight + 12) : 56;
+                        fp.style.width = Math.max(320, rect.width) + 'px';
+                        fp.style.height = Math.max(180, rect.height + controlsExtra) + 'px';
+                        fp.style.left = Math.max(8, rect.left) + 'px';
+                        const headerOffset = 90;
+                        fp.style.top = Math.max(headerOffset + 8, rect.top) + 'px';
+
+                        fpContent.appendChild(iframe);
+                        if (vcControls) {
+                            const fpContentNode = fp.querySelector('.fp-content');
+                            fpContentNode.parentNode.insertBefore(vcControls, fpContentNode.nextSibling);
+                        }
+                        isFloating = true;
+                        fpToggleDock.textContent = 'Fixar';
+                    }
+                }
+
+                function deactivateFloating() {
+                    const iframe = fpContent.querySelector('iframe');
+                    if (iframe && fpContent && dockContainer) {
+                        dockContainer.appendChild(iframe);
+                        if (vcControls) dockContainer.appendChild(vcControls);
+                        fp.style.display = 'none';
+                        fp.style.left = '';
+                        fp.style.top = '';
+                        fp.style.right = '';
+                        fp.style.bottom = '';
+                        isFloating = false;
+                        fpToggleDock.textContent = 'Janela Flutuante';
+                    }
+                }
+
+                fpToggleDock.addEventListener('click', ()=>{
+                    if(isFloating) deactivateFloating(); else activateFloating();
+                });
+
+                let dragging = false;
+                let dragStartX = 0, dragStartY = 0, startLeft = 0, startTop = 0;
+
+                header.addEventListener('pointerdown', (e)=>{
+                    dragging = true;
+                    dragStartX = e.clientX;
+                    dragStartY = e.clientY;
+                    const rect = fp.getBoundingClientRect();
+                    startLeft = rect.left;
+                    startTop = rect.top;
+                    fp.style.right = 'auto';
+                    fp.style.left = startLeft + 'px';
+                    fp.style.top = startTop + 'px';
+                    header.setPointerCapture(e.pointerId);
+                });
+
+                document.addEventListener('pointermove', (e)=>{
+                    if(dragging) {
+                        const dx = e.clientX - dragStartX;
+                        const dy = e.clientY - dragStartY;
+                        fp.style.left = (startLeft + dx) + 'px';
+                        fp.style.top = (startTop + dy) + 'px';
+                    }
+                    if(resizing && currentHandle) {
+                        let dx = e.clientX - startX;
+                        let dy = e.clientY - startY;
+                        let newW = startW;
+                        let newH = startH;
+                        if(currentHandle === handleBR) {
+                            newW = Math.max(320, startW + dx);
+                            newH = Math.max(180, startH + dy);
+                        } else {
+                            newW = Math.max(320, startW - dx);
+                            newH = Math.max(180, startH + dy);
+                        }
+                        fp.style.width = newW + 'px';
+                        fp.style.height = newH + 'px';
+                    }
+                });
+
+                document.addEventListener('pointerup', (e)=>{
+                    if(dragging) {
+                        dragging = false;
+                        try { header.releasePointerCapture(e.pointerId); } catch(e){}
+                    }
+                    if(resizing) {
+                        resizing = false;
+                        if(currentHandle) {
+                            try { currentHandle.releasePointerCapture(e.pointerId); } catch(e){}
+                        }
+                        currentHandle = null;
+                    }
+                });
+
+                document.addEventListener('keydown', (e)=>{
+                    if(e.key === 'Escape' && isFloating) deactivateFloating();
+                });
+
+                const handleBL = document.getElementById('fpResizeHandleBL');
+                const handleBR = document.getElementById('fpResizeHandleBR');
+                let resizing = false;
+                let currentHandle = null;
+                let startW = 0, startH = 0, startX = 0, startY = 0;
+
+                function onPointerDownHandle(e, handle) {
+                    resizing = true;
+                    currentHandle = handle;
+                    startW = fp.offsetWidth;
+                    startH = fp.offsetHeight;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    handle.setPointerCapture(e.pointerId);
+                    e.preventDefault();
+                }
+
+                function onPointerMoveHandle(e) {
+                    if(!resizing || !currentHandle) return;
+                    let dx = e.clientX - startX;
+                    let dy = e.clientY - startY;
+                    let newW = startW;
+                    let newH = startH;
+                    if(currentHandle === handleBR) {
+                        newW = Math.max(320, startW + dx);
+                        newH = Math.max(180, startH + dy);
+                    } else {
+                        newW = Math.max(320, startW - dx);
+                        newH = Math.max(180, startH + dy);
+                    }
+                    fp.style.width = newW + 'px';
+                    fp.style.height = newH + 'px';
+                }
+
+                function onPointerUpHandle(e) {
+                    if(currentHandle) {
+                        try { currentHandle.releasePointerCapture(e.pointerId); } catch(e){}
+                    }
+                    resizing = false;
+                    currentHandle = null;
+                }
+
+                handleBR.addEventListener('pointerdown', (e)=> onPointerDownHandle(e, handleBR));
+                handleBL.addEventListener('pointerdown', (e)=> onPointerDownHandle(e, handleBL));
+                handleBR.addEventListener('pointermove', onPointerMoveHandle);
+                handleBL.addEventListener('pointermove', onPointerMoveHandle);
+                handleBR.addEventListener('pointerup', onPointerUpHandle);
+                handleBL.addEventListener('pointerup', onPointerUpHandle);
+            })();
+        </script>
     </div>
 </body>
 </html>

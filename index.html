@@ -35,8 +35,7 @@
       </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
+    <section class="hero-section" id="home">
       <div class="hero-background">
         <div class="hero-overlay"></div>
         <div class="hero-content">
@@ -512,6 +511,85 @@
           });
         }
       }
+
+      // Levenshtein distance function
+      function levenshtein(a, b) {
+        if (a.length === 0) return b.length;
+        if (b.length === 0) return a.length;
+
+        const matrix = [];
+
+        for (let i = 0; i <= b.length; i++) {
+          matrix[i] = [i];
+        }
+
+        for (let j = 0; j <= a.length; j++) {
+          matrix[0][j] = j;
+        }
+
+        for (let i = 1; i <= b.length; i++) {
+          for (let j = 1; j <= a.length; j++) {
+            if (b.charAt(i - 1) === a.charAt(j - 1)) {
+              matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+              matrix[i][j] = Math.min(
+                matrix[i - 1][j - 1] + 1, // substitution
+                matrix[i][j - 1] + 1,     // insertion
+                matrix[i - 1][j] + 1      // deletion
+              );
+            }
+          }
+        }
+
+        return matrix[b.length][a.length];
+      }
+
+      // Function to remove accents
+      function removeAccents(str) {
+        return str.normalize("NFD").replace(/[̀-ͯ]/g, "");
+      }
+
+      // Search functionality with fuzzy matching and accent removal
+      document.querySelector('.search-bar').addEventListener('input', function() {
+        const searchTerm = removeAccents(this.value.toLowerCase());
+        const streamingCards = document.querySelectorAll('.streaming-card');
+        const threshold = 2; // Adjust this value for more or less fuzzy matching
+
+        streamingCards.forEach(card => {
+          const title = removeAccents(card.querySelector('.card-title').textContent.toLowerCase());
+          const description = removeAccents(card.querySelector('.card-description').textContent.toLowerCase());
+
+          const titleDistance = levenshtein(searchTerm, title);
+          const descriptionDistance = levenshtein(searchTerm, description);
+
+          if (title.includes(searchTerm) || description.includes(searchTerm) || titleDistance <= threshold || descriptionDistance <= threshold) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+
+      // Navigation scroll behavior
+      const navLinks = document.querySelectorAll('.main-nav a');
+      const sections = document.querySelectorAll('section');
+
+      window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop;
+          if (pageYOffset >= sectionTop - 60) {
+            current = section.getAttribute('id');
+          }
+        });
+
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href').includes(current)) {
+            link.classList.add('active');
+          }
+        });
+      });
     </script>
   </body>
 </html>
