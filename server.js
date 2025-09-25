@@ -14,6 +14,16 @@ const app = express();
 // Middlewares
 app.use(cors());
 app.use(express.json());
+
+// Define o Content Security Policy
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline' blob:; img-src 'self' data:;"
+  );
+  next();
+});
+
 app.use(express.static(path.join(__dirname))); // Serve arquivos estáticos da raiz
 
 // Rotas da API
