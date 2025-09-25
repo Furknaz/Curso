@@ -3,7 +3,7 @@ require('dotenv').config();
 
 // Configuração da conexão usando a URL do Railway
 const pool = mysql.createPool({
-  uri: process.env.MYSQL_URL,
+  uri: process.env.MYSQL_PUBLIC_URL,
   ssl: {
     rejectUnauthorized: false
   },
