@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KODE AGENCY - Perfil</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">K</div>
+                <div class="logo-text">KODE AGENCY</div>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="index.html#courses">Cursos</a></li>
+                    <li><a href="#">Meus Cursos</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <div class="profile-dropdown">
+                    <button class="profile-button" id="profileButton">
+                        <img src="images/profile-icon.png" alt="Profile" class="profile-icon" />
+                    </button>
+                    <div class="profile-dropdown-content" id="profileDropdownContent">
+                        <a href="profile.html">Meu Perfil</a>
+                        <a href="login.html" id="loginLink">Login</a>
+                        <a href="register.html" id="registerLink">Registrar</a>
+                        <a href="#" id="logoutLink" style="display: none;">Sair</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="profile-container">
+            <h2>Meu Perfil</h2>
+            <div class="profile-picture-section">
+                <img id="profile-img" src="images/profile-icon.png" alt="Profile Picture" class="profile-img-display">
+                <label for="profile-pic-upload" class="btn-secondary upload-btn">Alterar Foto</label>
+                <input type="file" id="profile-pic-upload" accept="image/*" style="display: none;">
+            </div>
+            <p><strong>Email:</strong> <span id="user-email"></span></p>
+            <h3>Meus Cursos</h3>
+            <div id="purchased-courses-grid" class="modules-grid">
+                <!-- Cursos comprados pelo usuário serão listados aqui -->
+                <p id="no-courses-message" style="display: none;">Você ainda não comprou nenhum curso.</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/moduleData.js"></script>
+    <script>
+        const userEmail = document.getElementById('user-email');
+        const profileImg = document.getElementById('profile-img');
+        const profilePicUpload = document.getElementById('profile-pic-upload');
+        const purchasedCoursesGrid = document.getElementById('purchased-courses-grid');
+        const noCoursesMessage = document.getElementById('no-courses-message');
+
+        const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+
+        if (loggedInUser) {
+            userEmail.textContent = loggedInUser.email;
+
+            // Load profile picture
+            // This part is not implemented in the backend, so I will leave it as it is
+            // but it will not persist.
+            let userProfilePicture = localStorage.getItem(`${loggedInUser.email}_profilePicture`);
+            if (userProfilePicture) {
+                profileImg.src = userProfilePicture;
+            }
+
+
+            // Display purchased courses
+            fetch(`/api/get-user-courses?userId=${loggedInUser.id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.courses && data.courses.length > 0) {
+                        noCoursesMessage.style.display = 'none';
+                        data.courses.forEach(course => {
+                            const module = moduleData[course.id];
+                            if (module) {
+                                const card = document.createElement('div');
+                                card.classList.add('streaming-card');
+                                card.innerHTML = `
+                                    <div class="card-image" style="background-image: url('${module.image}'); background-size: cover; background-position: center;">
+                                        <div class="module-badge">${course.id.toUpperCase()}</div>
+                                        <div class="card-overlay">
+                                            <button class="play-button" onclick="window.location.href='${module.url}'">▶</button>
+                                        </div>
+                                    </div>
+                                    <div class="card-content">
+                                        <h3 class="card-title">${course.title}</h3>
+                                        <button class="btn-primary" onclick="window.location.href='${module.url}'">Acessar Curso</button>
+                                    </div>
+                                `;
+                                purchasedCoursesGrid.appendChild(card);
+                            }
+                        });
+                    } else {
+                        noCoursesMessage.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching user courses:', error);
+                    noCoursesMessage.style.display = 'block';
+                });
+
+
+            // Handle profile picture upload
+            profilePicUpload.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        profileImg.src = e.target.result;
+                        // This will not persist in the database
+                        localStorage.setItem(`${loggedInUser.email}_profilePicture`, e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+        } else {
+            window.location.href = 'login.html';
+        }
+
+        // Check for successful payment
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+        if (sessionId) {
+            fetch('/api/verify-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ session_id: sessionId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Pagamento verificado com sucesso! Seus cursos foram liberados.');
+                    localStorage.removeItem('shoppingCart');
+                    // Remove session_id from URL and reload
+                    window.history.replaceState(null, '', window.location.pathname);
+                    window.location.reload();
+                } else {
+                    throw new Error(data.error || 'Falha na verificação do pagamento.');
+                }
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+        }
+    </script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

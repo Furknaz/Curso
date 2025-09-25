@@ -1,19 +1,25 @@
 {
-  "version": 2,
-  "builds": [
+  "name": "curso-site",
+  "rewrites": [
     {
-      "src": "**/*",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/",
-      "dest": "/index.html"
+      "source": "/api/create-checkout-session",
+      "destination": "/api/create-checkout-session.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "source": "/api/register",
+      "destination": "/api/register.js"
+    },
+    {
+      "source": "/api/login",
+      "destination": "/api/login.js"
+    },
+    {
+      "source": "/api/verify-payment",
+      "destination": "/api/verify-payment.js"
+    },
+    {
+      "source": "/api/get-user-courses",
+      "destination": "/api/get-user-courses.js"
     }
   ]
 }

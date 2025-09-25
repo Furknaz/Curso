@@ -18,8 +18,10 @@
           <ul>
             <li><a href="#home" class="active">Início</a></li>
             <li><a href="#courses">Cursos</a></li>
-            <li><a href="#categories">Categorias</a></li>
-            <li><a href="#progress">Meu Progresso</a></li>
+            <li><a href="register.html">Registrar</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="profile.html">Meu Progresso</a></li>
+            <li><a href="cart.html">Carrinho</a></li>
           </ul>
         </nav>
         <div class="header-actions">
@@ -30,7 +32,17 @@
               class="search-bar"
             />
           </div>
-          <div class="user-profile">U</div>
+          <div class="profile-dropdown">
+            <button class="profile-button" id="profileButton">
+              <img src="images/profile-icon.png" alt="Profile" class="profile-icon" />
+            </button>
+            <div class="profile-dropdown-content" id="profileDropdownContent">
+              <a href="profile.html">Meu Perfil</a>
+              <a href="login.html" id="loginLink">Login</a>
+              <a href="register.html" id="registerLink">Registrar</a>
+              <a href="#" id="logoutLink" style="display: none;">Sair</a>
+            </div>
+          </div>
         </div>
       </div>
     </header>
@@ -97,7 +109,8 @@
           <div
             class="streaming-card"
             data-category="fundamentos"
-            onclick="openModal('modulo1')"
+            data-module-id="modulo1"
+            data-price="49.90"
           >
             <div
               class="card-image"
@@ -109,7 +122,7 @@
             >
               <div class="module-badge">MÓDULO 1</div>
               <div class="card-overlay">
-                <button class="play-button">▶</button>
+                <button class="play-button" onclick="openModal('modulo1')">▶</button>
               </div>
               <div class="progress-bar">
                 <div class="progress-fill" style="width: 0%"></div>
@@ -125,6 +138,7 @@
                 <span class="lessons">■ 4 aulas</span>
                 <span class="rating">★ 4.8</span>
               </div>
+              <button class="buy-btn btn-primary add-to-cart-btn" data-module-id="modulo1" data-module-name="Módulo 1: Contornar Objeções" data-price="49.90">Comprar</button>
             </div>
           </div>
 
@@ -132,7 +146,8 @@
           <div
             class="streaming-card"
             data-category="pratica"
-            onclick="openModal('modulo2')"
+            data-module-id="modulo2"
+            data-price="59.90"
           >
             <div
               class="card-image"
@@ -144,7 +159,7 @@
             >
               <div class="module-badge">MÓDULO 2</div>
               <div class="card-overlay">
-                <button class="play-button">▶</button>
+                <button class="play-button" onclick="openModal('modulo2')">▶</button>
               </div>
               <div class="progress-bar">
                 <div class="progress-fill" style="width: 0%"></div>
@@ -158,6 +173,7 @@
                 <span class="lessons">■ 4 aulas</span>
                 <span class="rating">★ 4.9</span>
               </div>
+              <button class="buy-btn btn-primary add-to-cart-btn" data-module-id="modulo2" data-module-name="Módulo 2: Técnica de Vendas" data-price="59.90">Comprar</button>
             </div>
           </div>
 
@@ -165,7 +181,8 @@
           <div
             class="streaming-card"
             data-category="pratica"
-            onclick="openModal('modulo3')"
+            data-module-id="modulo3"
+            data-price="49.90"
           >
             <div
               class="card-image"
@@ -177,7 +194,7 @@
             >
               <div class="module-badge">MÓDULO 3</div>
               <div class="card-overlay">
-                <button class="play-button">▶</button>
+                <button class="play-button" onclick="openModal('modulo3')">▶</button>
               </div>
               <div class="progress-bar">
                 <div class="progress-fill" style="width: 0%"></div>
@@ -191,6 +208,7 @@
                 <span class="lessons">■ 4 aulas</span>
                 <span class="rating">★ 4.7</span>
               </div>
+              <button class="buy-btn btn-primary add-to-cart-btn" data-module-id="modulo3" data-module-name="Módulo 3: Técnicas de Persuasão" data-price="49.90">Comprar</button>
             </div>
           </div>
 
@@ -198,7 +216,8 @@
           <div
             class="streaming-card"
             data-category="avancado"
-            onclick="openModal('modulo4')"
+            data-module-id="modulo4"
+            data-price="69.90"
           >
             <div
               class="card-image"
@@ -210,7 +229,7 @@
             >
               <div class="module-badge">MÓDULO 4</div>
               <div class="card-overlay">
-                <button class="play-button">▶</button>
+                <button class="play-button" onclick="openModal('modulo4')">▶</button>
               </div>
               <div class="progress-bar">
                 <div class="progress-fill" style="width: 0%"></div>
@@ -226,6 +245,7 @@
                 <span class="lessons">■ 3 aulas</span>
                 <span class="rating">★ 4.9</span>
               </div>
+              <button class="buy-btn btn-primary add-to-cart-btn" data-module-id="modulo4" data-module-name="Módulo 4: Produtos" data-price="69.90">Comprar</button>
             </div>
           </div>
 
@@ -233,7 +253,8 @@
           <div
             class="streaming-card"
             data-category="avancado"
-            onclick="openModal('modulo5')"
+            data-module-id="modulo5"
+            data-price="39.90"
           >
             <div
               class="card-image"
@@ -245,7 +266,7 @@
             >
               <div class="module-badge">MÓDULO 5</div>
               <div class="card-overlay">
-                <button class="play-button">▶</button>
+                <button class="play-button" onclick="openModal('modulo5')">▶</button>
               </div>
               <div class="progress-bar">
                 <div class="progress-fill" style="width: 0%"></div>
@@ -259,6 +280,7 @@
                 <span class="lessons">■ 3 aulas</span>
                 <span class="rating">★ 4.8</span>
               </div>
+              <button class="buy-btn btn-primary add-to-cart-btn" data-module-id="modulo5" data-module-name="Módulo 5: Mapeamento de Meta" data-price="39.90">Comprar</button>
             </div>
           </div>
 
@@ -266,7 +288,8 @@
           <div
             class="streaming-card"
             data-category="avancado"
-            onclick="openModal('modulo6')"
+            data-module-id="modulo6"
+            data-price="79.90"
           >
             <div
               class="card-image"
@@ -278,7 +301,7 @@
             >
               <div class="module-badge">MÓDULO 6</div>
               <div class="card-overlay">
-                <button class="play-button">▶</button>
+                <button class="play-button" onclick="openModal('modulo6')">▶</button>
               </div>
               <div class="progress-bar">
                 <div class="progress-fill" style="width: 0%"></div>
@@ -292,6 +315,7 @@
                 <span class="lessons">■ 4 aulas</span>
                 <span class="rating">★ 4.6</span>
               </div>
+              <button class="buy-btn btn-primary add-to-cart-btn" data-module-id="modulo6" data-module-name="Módulo 6: Digitação Banco e Ecorban" data-price="79.90">Comprar</button>
             </div>
           </div>
 
@@ -299,7 +323,8 @@
           <div
             class="streaming-card"
             data-category="avancado"
-            onclick="openModal('modulo7')"
+            data-module-id="modulo7"
+            data-price="89.90"
           >
             <div
               class="card-image"
@@ -311,7 +336,7 @@
             >
               <div class="module-badge">MÓDULO 7</div>
               <div class="card-overlay">
-                <button class="play-button">▶</button>
+                <button class="play-button" onclick="openModal('modulo7')">▶</button>
               </div>
               <div class="progress-bar">
                 <div class="progress-fill" style="width: 0%"></div>
@@ -327,6 +352,7 @@
                 <span class="lessons">■ 4 aulas</span>
                 <span class="rating">★ 5.0</span>
               </div>
+              <button class="buy-btn btn-primary add-to-cart-btn" data-module-id="modulo7" data-module-name="Módulo 7: Acompanhamento de Esteira" data-price="89.90">Comprar</button>
             </div>
           </div>
         </div>
@@ -361,6 +387,7 @@
       </div>
     </div>
 
+    <script src="js/moduleData.js"></script>
     <script>
       // Category filter functionality
       document.addEventListener("DOMContentLoaded", function () {
@@ -406,59 +433,6 @@
             `;
         document.head.appendChild(style);
       });
-
-      // Dados dos módulos com sinopses
-      const moduleData = {
-        modulo1: {
-          title: "Módulo 1: Contornar Objeções",
-          description:
-            "Aprenda técnicas avançadas para superar objeções de clientes e transformar resistência em oportunidades de venda. Domine estratégias psicológicas e argumentativas para aumentar sua taxa de conversão.",
-          image: "images/Objeções.png",
-          url: "aulas/modulo1/modulo1.html",
-        },
-        modulo2: {
-          title: "Módulo 2: Técnica de Vendas",
-          description:
-            "Desenvolva habilidades fundamentais de vendas, desde a prospecção até o fechamento. Aprenda metodologias comprovadas para identificar necessidades do cliente e apresentar soluções eficazes.",
-          image: "images/Tecnica.png",
-          url: "aulas/modulo2/modulo2.html",
-        },
-        modulo3: {
-          title: "Módulo 3: Técnicas de Persuasão",
-          description:
-            "Domine a arte da persuasão ética aplicada às vendas. Compreenda os gatilhos mentais e técnicas de influência que levam clientes a tomar decisões favoráveis de compra.",
-          image: "images/Persuasão.png",
-          url: "aulas/modulo3/modulo3.html",
-        },
-        modulo4: {
-          title: "Módulo 4: Produtos",
-          description:
-            "Conheça profundamente todos os produtos de empréstimo consignado disponíveis. Aprenda características, vantagens e como posicionar cada produto para diferentes perfis de cliente.",
-          image: "images/Produtos.png",
-          url: "aulas/modulo4/modulo4.html",
-        },
-        modulo5: {
-          title: "Módulo 5: Mapeamento de Metas",
-          description:
-            "Estabeleça metas claras e alcançáveis para sua carreira em vendas. Aprenda metodologias de planejamento estratégico pessoal e técnicas de acompanhamento de resultados.",
-          image: "images/Mapeamento.png",
-          url: "aulas/modulo5/modulo5.html",
-        },
-        modulo6: {
-          title: "Módulo 6: Digitação Banco e Ecorban",
-          description:
-            "Domine os sistemas bancários e plataformas digitais essenciais para processar empréstimos consignados. Aprenda fluxos operacionais e boas práticas de digitação e conferência.",
-          image: "images/Digitação.png",
-          url: "aulas/modulo6/modulo6.html",
-        },
-        modulo7: {
-          title: "Módulo 7: Acompanhamento de Esteira",
-          description:
-            "Aprenda a gerenciar e acompanhar todo o processo de aprovação de empréstimos. Desenvolva habilidades para monitorar status, resolver pendências e garantir a finalização das operações.",
-          image: "images/Esteira.png",
-          url: "aulas/modulo7/modulo7.html",
-        },
-      };
 
       let currentModule = "";
 
@@ -590,6 +564,37 @@
           }
         });
       });
+
+      // This function will now check if the user has purchased the course and disable the add to cart button
+      function updateAddToCartButtons() {
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (!loggedInUser) {
+          return;
+        }
+
+        const userData = JSON.parse(localStorage.getItem(loggedInUser));
+        if (!userData || !userData.courses) {
+          return;
+        }
+
+        const streamingCards = document.querySelectorAll('.streaming-card');
+        streamingCards.forEach(card => {
+          const moduleId = card.getAttribute('data-module-id');
+          if (userData.courses.includes(moduleId)) {
+            const buyButton = card.querySelector('.buy-btn');
+            if (buyButton) {
+              buyButton.textContent = 'Comprado';
+              buyButton.disabled = true;
+              buyButton.style.backgroundColor = '#5cb85c'; // A green color for purchased
+              buyButton.style.cursor = 'default';
+            }
+          }
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', updateAddToCartButtons);
     </script>
+    <script src="js/auth.js"></script>
+    <script src="js/cart.js"></script>
   </body>
 </html>

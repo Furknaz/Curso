@@ -152,24 +152,66 @@ body {
   color: rgba(255, 255, 255, 0.6);
 }
 
-.user-profile {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+.profile-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
-.user-profile:hover {
+.profile-button:hover {
   transform: scale(1.1);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.profile-icon {
+  width: 24px;
+  height: 24px;
+  filter: invert(100%); /* Makes the SVG white */
+}
+
+.profile-dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #1a1a1a;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.6);
+  z-index: 1;
+  right: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-dropdown-content a {
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  transition: background-color 0.3s ease;
+}
+
+.profile-dropdown-content a:hover {
+  background-color: #333;
+}
+
+.profile-dropdown-content.show {
+  display: block;
 }
 
 /* Hero Section Styles */
@@ -647,7 +689,7 @@ body {
 /* Mobile Devices */
 @media (max-width: 768px) {
   body {
-    padding-top: 120px; /* Cabeçalho maior em mobile */
+    padding-top: 120px; /* Compensar cabeçalho fixo */
   }
 
   .header {
@@ -816,7 +858,7 @@ body {
     margin-right: 0;
   }
 
-  .episode-title {
+  .episode-info {
     font-size: 18px;
   }
 
@@ -842,7 +884,7 @@ body {
 /* Small Mobile Devices */
 @media (max-width: 480px) {
   body {
-    padding-top: 140px; /* Cabeçalho ainda maior em telas pequenas */
+    padding-top: 140px; /* Compensar cabeçalho fixo */
   }
 
   .header {
@@ -900,6 +942,7 @@ body {
   }
 
   .hero-stats {
+    justify-content: center;
     gap: 12px;
     flex-direction: column;
     align-items: center;
@@ -998,169 +1041,6 @@ body {
 
   .lesson-container {
     padding: 15px;
-  }
-
-  .lesson-title {
-    font-size: 24px;
-    line-height: 1.2;
-  }
-
-  .lesson-description {
-    font-size: 14px;
-  }
-
-  .lesson-content h3 {
-    font-size: 18px;
-    margin-top: 30px;
-  }
-
-  .lesson-content p,
-  .lesson-content li {
-    font-size: 14px;
-    line-height: 1.6;
-  }
-
-  .back-link {
-    padding: 8px 16px;
-    font-size: 0.9rem;
-  }
-
-  .episode-list {
-    padding: 0 15px;
-  }
-
-  .episode-item {
-    padding: 15px 0;
-    gap: 10px;
-  }
-
-  .episode-number {
-    font-size: 20px;
-  }
-
-  .episode-title {
-    font-size: 16px;
-  }
-
-  .episode-description {
-    font-size: 13px;
-  }
-
-  .watch-button {
-    padding: 8px 16px;
-    font-size: 0.9rem;
-  }
-
-  .module-header {
-    padding: 20px 15px;
-  }
-
-  .module-title {
-    font-size: 28px;
-  }
-
-  .modal-content {
-    width: 98%;
-    margin: 5% auto;
-  }
-
-  .modal-info {
-    padding: 15px;
-  }
-
-  .modal-info h1 {
-    font-size: 24px;
-  }
-
-  .modal-info p {
-    font-size: 14px;
-  }
-
-  .modal-header {
-    min-height: 250px;
-  }
-
-  .access-btn {
-    padding: 12px 20px;
-    font-size: 16px;
-  }
-}
-
-/* Extra Small Devices */
-@media (max-width: 360px) {
-  .header-content {
-    padding: 0 10px;
-  }
-
-  .logo-text {
-    font-size: 1.2rem;
-  }
-
-  .main-nav ul {
-    gap: 10px;
-    font-size: 0.8rem;
-  }
-
-  .search-bar {
-    width: 150px;
-    padding: 6px 12px;
-  }
-
-  .search-bar:focus {
-    width: 170px;
-  }
-
-  .hero-content {
-    padding: 0 10px;
-  }
-
-  .hero-title {
-    font-size: 1.6rem;
-  }
-
-  .hero-description {
-    font-size: 0.9rem;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    padding: 10px 16px;
-    font-size: 0.9rem;
-    max-width: 220px;
-  }
-
-  .courses-section {
-    padding: 15px 10px;
-  }
-
-  .section-title {
-    font-size: 1.4rem;
-  }
-
-  .filter-btn {
-    padding: 6px 12px;
-    font-size: 0.75rem;
-  }
-
-  .card-content {
-    padding: 12px;
-  }
-
-  .card-title {
-    font-size: 1rem;
-  }
-
-  .card-description {
-    font-size: 0.8rem;
-  }
-
-  .card-meta {
-    font-size: 0.7rem;
-    gap: 6px;
-  }
-
-  .lesson-container {
-    padding: 12px;
   }
 
   .lesson-title {
@@ -1756,3 +1636,283 @@ body {
 
 .fp-resize-bl { left: 8px; bottom: 8px; cursor: nesw-resize; }
 .fp-resize-br { right: 8px; bottom: 8px; cursor: nwse-resize; }
+
+.login-container, .profile-container {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 40px;
+  background: rgba(20, 20, 20, 0.9);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+}
+
+.login-container h2, .profile-container h2 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.input-group input {
+  width: 100%;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white;
+}
+
+.profile-container p {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
+.profile-container h3 {
+  margin-top: 40px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 10px;
+}
+
+/* Cart Page Specific Styles */
+.cart-section {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 30px;
+  background: rgba(20, 20, 20, 0.9);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+}
+
+.cart-section .section-title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2.2rem;
+}
+
+.cart-items {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+}
+
+.cart-item span {
+  font-size: 1.1rem;
+}
+
+.cart-item-name {
+  flex-grow: 1;
+}
+
+.cart-item-price {
+  min-width: 120px;
+  text-align: right;
+  margin-left: 1rem;
+}
+
+.cart-item button {
+  background-color: #e50914;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 1rem;
+}
+
+.cart-item button:hover {
+  background-color: #b20710;
+}
+
+.cart-summary {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.cart-summary p {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin: 0 0 15px auto;
+}
+
+.cart-summary #cart-total {
+  color: #e50914;
+  font-size: 1.6rem;
+}
+
+.cart-summary .btn-primary {
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  max-width: 300px;
+  margin-top: 15px;
+}
+
+@media (max-width: 768px) {
+  .cart-section {
+    margin: 20px auto;
+    padding: 20px;
+  }
+
+  .cart-section .section-title {
+    font-size: 1.8rem;
+  }
+
+  .cart-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .cart-item span {
+    font-size: 1rem;
+  }
+
+  .cart-item button {
+    width: 100%;
+  }
+
+  .cart-summary p {
+    font-size: 1.2rem;
+    margin: 0 0 10px auto;
+  }
+
+  .cart-summary #cart-total {
+    font-size: 1.4rem;
+  }
+
+  .cart-summary .btn-primary {
+    font-size: 1.1rem;
+    max-width: 100%;
+    margin-top: 10px;
+  }
+}
+
+/* Profile Page Specific Styles */
+.profile-picture-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.profile-img-display {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e50914;
+  margin-bottom: 10px;
+  box-shadow: 0 0 10px rgba(229, 9, 20, 0.4);
+}
+
+.upload-btn {
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.upload-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #e50914;
+}
+
+/* Adjustments for profile container */
+.profile-container {
+  max-width: 600px; /* Adjusted max-width for more compact display */
+  margin: 40px auto;
+  padding: 30px;
+  background: rgba(20, 20, 20, 0.9);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+}
+
+.profile-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 2.2rem;
+}
+
+.profile-container h3 {
+  margin-top: 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 8px;
+  font-size: 1.6rem;
+}
+
+.profile-container p {
+  text-align: center;
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+/* Styling for purchased courses grid */
+#purchased-courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Smaller cards */
+  gap: 10px;
+  margin-top: 15px;
+}
+
+#no-courses-message {
+  text-align: center;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 15px;
+}
+
+/* Adjust streaming card for profile page */
+#purchased-courses-grid .streaming-card {
+  background: rgba(30, 30, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+#purchased-courses-grid .streaming-card .card-image {
+  height: 120px; /* Smaller image height */
+}
+
+#purchased-courses-grid .streaming-card .card-content {
+  padding: 10px; /* Reduced padding */
+}
+
+#purchased-courses-grid .streaming-card .card-title {
+  font-size: 1.1rem; /* Slightly smaller title */
+  margin-bottom: 5px;
+}
+
+#purchased-courses-grid .streaming-card .card-content .btn-primary {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
