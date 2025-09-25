@@ -1,22 +1,16 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-// Configuração explícita da conexão com o banco de dados
-const dbConfig = {
-  host: process.env.MYSQLHOST,
-  user: process.env.MYSQLUSER,
-  password: process.env.MYSQLPASSWORD,
-  port: process.env.MYSQLPORT,
-  database: process.env.MYSQLDATABASE,
+// Configuração da conexão usando a URL do Railway
+const pool = mysql.createPool({
+  uri: process.env.MYSQL_URL,
   ssl: {
     rejectUnauthorized: false
   },
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
-};
-
-const pool = mysql.createPool(dbConfig);
+});
 
 const createTables = async () => {
   const usersTableQuery = `
