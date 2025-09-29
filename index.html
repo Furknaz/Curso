@@ -434,6 +434,14 @@
           const buyButton = card.querySelector('.buy-btn');
           const playButton = card.querySelector('.play-button');
 
+          // The play button should always navigate to the module page to see topics
+          if (playButton) {
+            playButton.onclick = (e) => {
+              e.stopPropagation();
+              navigateToModule(moduleId);
+            };
+          }
+
           if (purchasedCourses.has(moduleId)) {
             // USER OWNS THIS COURSE
             if (buyButton) {
@@ -444,13 +452,7 @@
               buyButton.classList.remove('add-to-cart-btn');
               buyButton.onclick = (e) => {
                 e.stopPropagation();
-                accessModule(moduleId);
-              };
-            }
-            if (playButton) {
-              playButton.onclick = (e) => {
-                e.stopPropagation();
-                accessModule(moduleId);
+                navigateToModule(moduleId);
               };
             }
           } else {
@@ -464,28 +466,17 @@
               // Let the generic cart.js logic handle the click
               buyButton.onclick = null; 
             }
-            if (playButton) {
-              playButton.onclick = (e) => {
-                e.stopPropagation();
-                openModal(moduleId);
-              };
-            }
           }
         });
       }
 
-      function accessModule(moduleId) {
+      function navigateToModule(moduleId) {
         if (moduleId && moduleData[moduleId]) {
-          if (purchasedCourses.has(moduleId)) {
-            window.location.href = moduleData[moduleId].url;
-          } else {
-            alert('Você precisa comprar este curso para acessá-lo.');
-            openModal(moduleId);
-          }
+          window.location.href = moduleData[moduleId].url;
         }
       }
 
-      // --- MODAL LOGIC ---
+      // --- MODAL LOGIC (largely for info now) ---
 
       function openModal(moduleId) {
         const module = moduleData[moduleId];
@@ -496,8 +487,6 @@
           document.getElementById("modalImage").src = module.image;
           
           const accessButton = document.getElementById("accessButton");
-          // The button in the modal should always be for adding to cart,
-          // as the main card button becomes "Acessar" upon purchase.
           accessButton.textContent = 'Adicionar ao Carrinho';
           accessButton.onclick = () => {
               const buyButton = document.querySelector(`.add-to-cart-btn[data-module-id='${moduleId}']`);
@@ -506,7 +495,9 @@
                   closeModal();
                   alert('Curso adicionado ao carrinho!');
               } else {
-                  alert('Este curso já foi comprado.');
+                  // This case happens if the course is already purchased
+                  alert('Você já possui este curso! Clique em "Acessar" para começar.');
+                  closeModal();
               }
           };
 

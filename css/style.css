@@ -1916,3 +1916,15 @@ body {
   font-size: 0.9rem;
   margin-top: 10px;
 }
+
+/* Locked lesson button style */
+.watch-button.locked-lesson {
+  background-color: #888888; /* Medium gray */
+  color: #cccccc;
+  cursor: not-allowed;
+}
+
+.watch-button.locked-lesson:hover {
+  background-color: #888888; /* Keep the same color on hover */
+  color: #cccccc;
+}
