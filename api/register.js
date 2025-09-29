@@ -1,4 +1,4 @@
-const pool = require('./db');
+const db = require('./db');
 const bcrypt = require('bcryptjs');
 
 module.exports = async (req, res) => {
@@ -13,21 +13,36 @@ module.exports = async (req, res) => {
   }
 
   try {
+    console.log('Attempting to register user:', email);
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const queryText = 'INSERT INTO users(email, password) VALUES(?, ?)';
-    const [result] = await pool.query(queryText, [email, hashedPassword]);
+    const [result] = await db.query(queryText, [email, hashedPassword]);
 
     const insertedId = result.insertId;
-    const [rows] = await pool.query('SELECT id, email FROM users WHERE id = ?', [insertedId]);
+    console.log(`User registered with ID: ${insertedId}`);
+
+    const [rows] = await db.query('SELECT id, email FROM users WHERE id = ?', [insertedId]);
 
     res.status(201).json({ user: rows[0] });
+
   } catch (error) {
-    console.error('Error registering user:', error);
-    if (error.code === 'ER_DUP_ENTRY') { // Unique violation for MySQL
+    console.error('[API_REGISTER_ERROR] Failed to register user:', email);
+    console.error('[API_REGISTER_ERROR] Full error object:', JSON.stringify(error, null, 2));
+
+    if (error.code === 'ECONNREFUSED') {
+      console.error('[API_REGISTER_ERROR] Database connection was refused. This is a network or firewall issue.');
+      return res.status(500).json({ 
+        error: 'Database connection failed.', 
+        details: 'The server could not connect to the database. Please contact support.' 
+      });
+    } 
+    
+    if (error.code === 'ER_DUP_ENTRY') {
       return res.status(409).json({ error: 'User with this email already exists' });
     }
-    res.status(500).json({ error: 'Internal Server Error' });
+    
+    res.status(500).json({ error: 'An internal server error occurred.', details: error.code });
   }
 };

@@ -1,9 +1,8 @@
 const mysql = require('mysql2/promise');
-require('dotenv').config();
 
 // Configuração da conexão usando a URL do Railway
 const pool = mysql.createPool({
-  uri: process.env.MYSQL_PUBLIC_URL,
+  uri: process.env.MYSQL_URL,
   ssl: {
     rejectUnauthorized: false
   },
@@ -104,4 +103,6 @@ if (require.main === module) {
   });
 }
 
-module.exports = pool;
+module.exports = {
+  query: (text, params) => pool.query(text, params),
+};
