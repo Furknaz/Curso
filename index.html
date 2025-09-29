@@ -389,61 +389,127 @@
 
     <script src="js/moduleData.js"></script>
     <script>
-      // Category filter functionality
+      let purchasedCourses = new Set();
+      let currentUser = null;
+      let currentModalModuleId = null;
+
+      // --- CORE LOGIC ---
+
       document.addEventListener("DOMContentLoaded", function () {
-        const filterButtons = document.querySelectorAll(".filter-btn");
-        const streamingCards = document.querySelectorAll(".streaming-card");
-
-        filterButtons.forEach((button) => {
-          button.addEventListener("click", function () {
-            // Remove active class from all buttons
-            filterButtons.forEach((btn) => btn.classList.remove("active"));
-            // Add active class to clicked button
-            this.classList.add("active");
-
-            const category = this.getAttribute("data-category");
-
-            streamingCards.forEach((card) => {
-              if (
-                category === "all" ||
-                card.getAttribute("data-category") === category
-              ) {
-                card.style.display = "block";
-                card.style.animation = "fadeInUp 0.5s ease forwards";
-              } else {
-                card.style.display = "none";
-              }
-            });
-          });
-        });
-
-        // Add CSS animation for cards
-        const style = document.createElement("style");
-        style.textContent = `
-                @keyframes fadeInUp {
-                    from {
-                        opacity: 0;
-                        transform: translateY(30px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-            `;
-        document.head.appendChild(style);
+        updateUIBasedOnLogin();
+        initializeEventListeners();
       });
 
-      let currentModule = "";
+      async function updateUIBasedOnLogin() {
+        const userString = localStorage.getItem('loggedInUser');
+        if (userString) {
+          currentUser = JSON.parse(userString);
+        } else {
+          currentUser = null;
+        }
+
+        if (currentUser && currentUser.id) {
+          try {
+            const response = await fetch(`/api/get-user-courses?userId=${currentUser.id}`);
+            if (response.ok) {
+              const data = await response.json();
+              purchasedCourses = new Set(data.courses.map(c => c.id));
+            } else {
+              console.error('Failed to get user courses, server responded with:', response.status);
+            }
+          } catch (error) {
+            console.error('Error fetching user courses:', error);
+          }
+        } else {
+          purchasedCourses.clear();
+        }
+        
+        updateAllModuleCards();
+      }
+
+      function updateAllModuleCards() {
+        const streamingCards = document.querySelectorAll('.streaming-card');
+        streamingCards.forEach(card => {
+          const moduleId = card.getAttribute('data-module-id');
+          const buyButton = card.querySelector('.buy-btn');
+          const playButton = card.querySelector('.play-button');
+
+          if (purchasedCourses.has(moduleId)) {
+            // USER OWNS THIS COURSE
+            if (buyButton) {
+              buyButton.textContent = 'Acessar';
+              buyButton.disabled = false;
+              buyButton.style.backgroundColor = '#5cb85c'; // Green
+              buyButton.style.cursor = 'pointer';
+              buyButton.classList.remove('add-to-cart-btn');
+              buyButton.onclick = (e) => {
+                e.stopPropagation();
+                accessModule(moduleId);
+              };
+            }
+            if (playButton) {
+              playButton.onclick = (e) => {
+                e.stopPropagation();
+                accessModule(moduleId);
+              };
+            }
+          } else {
+            // USER DOES NOT OWN THIS COURSE
+            if (buyButton) {
+              buyButton.textContent = 'Comprar';
+              buyButton.disabled = false;
+              buyButton.style.backgroundColor = ''; // Reset to default
+              buyButton.style.cursor = 'pointer';
+              buyButton.classList.add('add-to-cart-btn');
+              // Let the generic cart.js logic handle the click
+              buyButton.onclick = null; 
+            }
+            if (playButton) {
+              playButton.onclick = (e) => {
+                e.stopPropagation();
+                openModal(moduleId);
+              };
+            }
+          }
+        });
+      }
+
+      function accessModule(moduleId) {
+        if (moduleId && moduleData[moduleId]) {
+          if (purchasedCourses.has(moduleId)) {
+            window.location.href = moduleData[moduleId].url;
+          } else {
+            alert('Você precisa comprar este curso para acessá-lo.');
+            openModal(moduleId);
+          }
+        }
+      }
+
+      // --- MODAL LOGIC ---
 
       function openModal(moduleId) {
         const module = moduleData[moduleId];
         if (module) {
-          currentModule = moduleId;
+          currentModalModuleId = moduleId;
           document.getElementById("modalTitle").textContent = module.title;
-          document.getElementById("modalDescription").textContent =
-            module.description;
+          document.getElementById("modalDescription").textContent = module.description;
           document.getElementById("modalImage").src = module.image;
+          
+          const accessButton = document.getElementById("accessButton");
+          // The button in the modal should always be for adding to cart,
+          // as the main card button becomes "Acessar" upon purchase.
+          accessButton.textContent = 'Adicionar ao Carrinho';
+          accessButton.onclick = () => {
+              const buyButton = document.querySelector(`.add-to-cart-btn[data-module-id='${moduleId}']`);
+              if (buyButton) {
+                  buyButton.click(); // Triggers the logic in cart.js
+                  closeModal();
+                  alert('Curso adicionado ao carrinho!');
+              } else {
+                  alert('Este curso já foi comprado.');
+              }
+          };
+
           document.getElementById("moduleModal").style.display = "block";
           document.body.style.overflow = "hidden";
         }
@@ -454,145 +520,99 @@
         document.body.style.overflow = "auto";
       }
 
-      function accessModule() {
-        if (currentModule && moduleData[currentModule]) {
-          window.location.href = moduleData[currentModule].url;
-        }
-      }
+      // --- PRESERVED EVENT LISTENERS & HELPERS ---
 
-      // Fechar modal ao clicar fora dele
-      window.onclick = function (event) {
-        const modal = document.getElementById("moduleModal");
-        if (event.target === modal) {
-          closeModal();
-        }
-      };
-
-      // Fechar modal com tecla ESC
-      document.addEventListener("keydown", function (event) {
-        if (event.key === "Escape") {
-          closeModal();
-        }
-      });
-
-      // Função para rolar até a seção de cursos
-      function scrollToCourses() {
-        const coursesSection = document.getElementById("courses");
-        if (coursesSection) {
-          coursesSection.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
+      function initializeEventListeners() {
+        // Category filter
+        const filterButtons = document.querySelectorAll(".filter-btn");
+        const streamingCards = document.querySelectorAll(".streaming-card");
+        filterButtons.forEach(button => {
+          button.addEventListener("click", function () {
+            filterButtons.forEach(btn => btn.classList.remove("active"));
+            this.classList.add("active");
+            const category = this.getAttribute("data-category");
+            streamingCards.forEach(card => {
+              if (category === "all" || card.getAttribute("data-category") === category) {
+                card.style.display = "block";
+              } else {
+                card.style.display = "none";
+              }
+            });
           });
-        }
+        });
+
+        // Modal close events
+        window.onclick = (event) => {
+          const modal = document.getElementById("moduleModal");
+          if (event.target === modal) closeModal();
+        };
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") closeModal();
+        });
+
+        // Search bar
+        document.querySelector('.search-bar').addEventListener('input', function() {
+          const searchTerm = removeAccents(this.value.toLowerCase());
+          const streamingCards = document.querySelectorAll('.streaming-card');
+          const threshold = 2;
+          streamingCards.forEach(card => {
+            const title = removeAccents(card.querySelector('.card-title').textContent.toLowerCase());
+            const description = removeAccents(card.querySelector('.card-description').textContent.toLowerCase());
+            const titleDistance = levenshtein(searchTerm, title);
+            const descriptionDistance = levenshtein(searchTerm, description);
+            if (title.includes(searchTerm) || description.includes(searchTerm) || titleDistance <= threshold || descriptionDistance <= threshold) {
+              card.style.display = 'block';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+
+        // Nav scroll behavior
+        const navLinks = document.querySelectorAll('.main-nav a');
+        const sections = document.querySelectorAll('section');
+        window.addEventListener('scroll', () => {
+          let current = '';
+          sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 60) {
+              current = section.getAttribute('id');
+            }
+          });
+          navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').includes(current)) {
+              link.classList.add('active');
+            }
+          });
+        });
       }
 
-      // Levenshtein distance function
+      function scrollToCourses() {
+        document.getElementById("courses")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
       function levenshtein(a, b) {
         if (a.length === 0) return b.length;
         if (b.length === 0) return a.length;
-
         const matrix = [];
-
-        for (let i = 0; i <= b.length; i++) {
-          matrix[i] = [i];
-        }
-
-        for (let j = 0; j <= a.length; j++) {
-          matrix[0][j] = j;
-        }
-
+        for (let i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+        for (let j = 0; j <= a.length; j++) { matrix[0][j] = j; }
         for (let i = 1; i <= b.length; i++) {
           for (let j = 1; j <= a.length; j++) {
             if (b.charAt(i - 1) === a.charAt(j - 1)) {
               matrix[i][j] = matrix[i - 1][j - 1];
             } else {
-              matrix[i][j] = Math.min(
-                matrix[i - 1][j - 1] + 1, // substitution
-                matrix[i][j - 1] + 1,     // insertion
-                matrix[i - 1][j] + 1      // deletion
-              );
+              matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, matrix[i][j - 1] + 1, matrix[i - 1][j] + 1);
             }
           }
         }
-
         return matrix[b.length][a.length];
       }
 
-      // Function to remove accents
       function removeAccents(str) {
         return str.normalize("NFD").replace(/[̀-ͯ]/g, "");
       }
-
-      // Search functionality with fuzzy matching and accent removal
-      document.querySelector('.search-bar').addEventListener('input', function() {
-        const searchTerm = removeAccents(this.value.toLowerCase());
-        const streamingCards = document.querySelectorAll('.streaming-card');
-        const threshold = 2; // Adjust this value for more or less fuzzy matching
-
-        streamingCards.forEach(card => {
-          const title = removeAccents(card.querySelector('.card-title').textContent.toLowerCase());
-          const description = removeAccents(card.querySelector('.card-description').textContent.toLowerCase());
-
-          const titleDistance = levenshtein(searchTerm, title);
-          const descriptionDistance = levenshtein(searchTerm, description);
-
-          if (title.includes(searchTerm) || description.includes(searchTerm) || titleDistance <= threshold || descriptionDistance <= threshold) {
-            card.style.display = 'block';
-          } else {
-            card.style.display = 'none';
-          }
-        });
-      });
-
-      // Navigation scroll behavior
-      const navLinks = document.querySelectorAll('.main-nav a');
-      const sections = document.querySelectorAll('section');
-
-      window.addEventListener('scroll', () => {
-        let current = '';
-        sections.forEach(section => {
-          const sectionTop = section.offsetTop;
-          if (pageYOffset >= sectionTop - 60) {
-            current = section.getAttribute('id');
-          }
-        });
-
-        navLinks.forEach(link => {
-          link.classList.remove('active');
-          if (link.getAttribute('href').includes(current)) {
-            link.classList.add('active');
-          }
-        });
-      });
-
-      // This function will now check if the user has purchased the course and disable the add to cart button
-      function updateAddToCartButtons() {
-        const loggedInUser = localStorage.getItem('loggedInUser');
-        if (!loggedInUser) {
-          return;
-        }
-
-        const userData = JSON.parse(localStorage.getItem(loggedInUser));
-        if (!userData || !userData.courses) {
-          return;
-        }
-
-        const streamingCards = document.querySelectorAll('.streaming-card');
-        streamingCards.forEach(card => {
-          const moduleId = card.getAttribute('data-module-id');
-          if (userData.courses.includes(moduleId)) {
-            const buyButton = card.querySelector('.buy-btn');
-            if (buyButton) {
-              buyButton.textContent = 'Comprado';
-              buyButton.disabled = true;
-              buyButton.style.backgroundColor = '#5cb85c'; // A green color for purchased
-              buyButton.style.cursor = 'default';
-            }
-          }
-        });
-      }
-
-      document.addEventListener('DOMContentLoaded', updateAddToCartButtons);
     </script>
     <script src="js/auth.js"></script>
     <script src="js/cart.js"></script>
