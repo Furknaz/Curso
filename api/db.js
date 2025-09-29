@@ -3,6 +3,7 @@ const mysql = require('mysql2/promise');
 // Configuração da conexão usando a URL do Railway
 const pool = mysql.createPool({
   uri: process.env.MYSQL_URL,
+  database: process.env.MYSQL_DATABASE,
   ssl: {
     rejectUnauthorized: false
   },
