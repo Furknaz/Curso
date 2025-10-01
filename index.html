@@ -501,15 +501,9 @@
           } else {
             accessButton.textContent = 'Adicionar ao Carrinho';
             accessButton.onclick = () => {
-                const buyButton = document.querySelector(`.add-to-cart-btn[data-module-id='${moduleId}']`);
-                if (buyButton) {
-                    buyButton.click(); // Triggers the logic in cart.js
-                    closeModal();
-                    alert('Curso adicionado ao carrinho!');
-                } else {
-                    alert('Você já possui este curso! Clique em "Acessar" para começar.');
-                    closeModal();
-                }
+                window.addToCart(module.id, module.title, module.price);
+                closeModal();
+                alert('Curso adicionado ao carrinho!');
             };
           }
 

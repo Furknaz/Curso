@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add to cart button event listener
     document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        console.log('cart.js: Attaching click listener to add-to-cart-btn', button);
         button.addEventListener('click', function() {
             const moduleId = this.dataset.moduleId;
             const moduleName = this.dataset.moduleName;
