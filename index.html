@@ -12,7 +12,7 @@
       <div class="header-content">
         <div class="logo">
           <div class="logo-icon">K</div>
-          <div class="logo-text">KODE AGENCY</div>
+          <div class="logo-text">FS FINANCE GROUP</div>
         </div>
         <nav class="main-nav">
           <ul>
@@ -434,11 +434,11 @@
           const buyButton = card.querySelector('.buy-btn');
           const playButton = card.querySelector('.play-button');
 
-          // The play button should always navigate to the module page to see topics
+          // The play button should always open the modal to show module details
           if (playButton) {
             playButton.onclick = (e) => {
               e.stopPropagation();
-              navigateToModule(moduleId);
+              openModal(moduleId);
             };
           }
 
@@ -472,7 +472,12 @@
 
       function navigateToModule(moduleId) {
         if (moduleId && moduleData[moduleId]) {
-          window.location.href = moduleData[moduleId].url;
+          if (purchasedCourses.has(moduleId)) {
+            window.location.href = moduleData[moduleId].url;
+          } else {
+            alert('Você precisa comprar este módulo para acessá-lo.');
+            // Optionally, redirect to the course sales page or do nothing
+          }
         }
       }
 
@@ -487,19 +492,26 @@
           document.getElementById("modalImage").src = module.image;
           
           const accessButton = document.getElementById("accessButton");
-          accessButton.textContent = 'Adicionar ao Carrinho';
-          accessButton.onclick = () => {
-              const buyButton = document.querySelector(`.add-to-cart-btn[data-module-id='${moduleId}']`);
-              if (buyButton) {
-                  buyButton.click(); // Triggers the logic in cart.js
-                  closeModal();
-                  alert('Curso adicionado ao carrinho!');
-              } else {
-                  // This case happens if the course is already purchased
-                  alert('Você já possui este curso! Clique em "Acessar" para começar.');
-                  closeModal();
-              }
-          };
+          if (purchasedCourses.has(moduleId)) {
+            accessButton.textContent = 'Acessar Módulo';
+            accessButton.onclick = () => {
+              closeModal();
+              navigateToModule(moduleId);
+            };
+          } else {
+            accessButton.textContent = 'Adicionar ao Carrinho';
+            accessButton.onclick = () => {
+                const buyButton = document.querySelector(`.add-to-cart-btn[data-module-id='${moduleId}']`);
+                if (buyButton) {
+                    buyButton.click(); // Triggers the logic in cart.js
+                    closeModal();
+                    alert('Curso adicionado ao carrinho!');
+                } else {
+                    alert('Você já possui este curso! Clique em "Acessar" para começar.');
+                    closeModal();
+                }
+            };
+          }
 
           document.getElementById("moduleModal").style.display = "block";
           document.body.style.overflow = "hidden";
