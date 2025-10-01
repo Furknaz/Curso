@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('cart.js: DOMContentLoaded');
 
+    // Replace with your Stripe publishable key
+    const stripe = Stripe('pk_test_51SAVZF4G62TEORgEfogL0XbHImRC9KDwB4xUGqlBpWtmvAhZml4vfWL9YgNGIUYERNCrGvlj9wQADjCVYUHn648j00ppoPHDqR');
+
     // Global addToCart function
     window.addToCart = function(moduleId, moduleName, modulePrice) {
         console.log(`addToCart function called for: ${moduleName} (${moduleId}, R$${modulePrice})`);
@@ -105,7 +108,7 @@ function renderCartPage() {
         }
 
         // Replace with your Stripe publishable key
-        const stripe = Stripe('pk_test_51SAVZF4G62TEORgEfogL0XbHImRC9KDwB4xUGqlBpWtmvAhZml4vfWL9YgNGIUYERNCrGvlj9wQADjCVYUHn648j00ppoPHDqR');
+
 
         try {
             const response = await fetch('/api/create-checkout-session', {
