@@ -1,40 +1,51 @@
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('cart.js: DOMContentLoaded');
+let stripe;
 
-    let stripe;
+async function waitForStripe() {
+    return new Promise(resolve => {
+        const checkStripe = () => {
+            if (window.Stripe) {
+                stripe = Stripe('pk_test_51SAVZF4G62TEORgEfogL0XbHImRC9KDwB4xUGqlBpWtmvAhZml4vfWL9YgNGIUYERNCrGvlj9wQADjCVYUHn648j00ppoPHDqR');
+                console.log('Stripe initialized successfully.');
+                resolve();
+            } else {
+                console.log('Stripe.js not yet loaded, retrying...');
+                setTimeout(checkStripe, 100);
+            }
+        };
+        checkStripe();
+    });
+}
 
-    function initializeStripe() {
-        if (window.Stripe) {
-            stripe = Stripe('pk_test_51SAVZF4G62TEORgEfogL0XbHImRC9KDwB4xUGqlBpWtmvAhZml4vfWL9YgNGIUYERNCrGvlj9wQADjCVYUHn648j00ppoPHDqR');
-            console.log('Stripe initialized successfully.');
-        } else {
-            console.log('Stripe.js not yet loaded, retrying...');
-            setTimeout(initializeStripe, 100);
-        }
+// Global addToCart function
+window.addToCart = function(moduleId, moduleName, modulePrice) {
+    console.log(`addToCart function called for: ${moduleName} (${moduleId}, R$${modulePrice})`);
+    console.log('cart.js: Attempting to retrieve shoppingCart from localStorage.');
+    let cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
+    console.log('cart.js: Current cart state from localStorage:', cart);
+    const existingItem = cart.find(item => item.id === moduleId);
+
+    if (existingItem) {
+        console.log(`cart.js: Item already in cart: ${moduleName}`);
+        return;
     }
 
-    initializeStripe();
+    cart.push({ id: moduleId, name: moduleName, price: parseFloat(modulePrice) });
+    console.log('cart.js: Item added to cart array. Saving to localStorage.');
+    localStorage.setItem('shoppingCart', JSON.stringify(cart));
+    console.log('cart.js: Item added to cart. New cart in localStorage:', JSON.parse(localStorage.getItem('shoppingCart')));
+    console.log('cart.js: Redirecting to cart.html.');
+    window.location.href = 'cart.html';
+};
 
-    // Global addToCart function
-    window.addToCart = function(moduleId, moduleName, modulePrice) {
-        console.log(`addToCart function called for: ${moduleName} (${moduleId}, R$${modulePrice})`);
-        let cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
-        const existingItem = cart.find(item => item.id === moduleId);
-
-        if (existingItem) {
-            console.log(`cart.js: Item already in cart: ${moduleName}`);
-            return;
-        }
-
-        cart.push({ id: moduleId, name: moduleName, price: parseFloat(modulePrice) });
-        localStorage.setItem('shoppingCart', JSON.stringify(cart));
-        console.log('cart.js: Item added to cart. New cart:', cart);
-        window.location.href = 'cart.html';
-    };
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('cart.js: DOMContentLoaded event fired.');
 
     // Add to cart button event listener
-    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+    console.log(`cart.js: Found ${addToCartButtons.length} 'add-to-cart-btn' buttons.`);
+    addToCartButtons.forEach(button => {
         button.addEventListener('click', function() {
+            console.log('cart.js: Add to cart button clicked.');
             const moduleId = this.dataset.moduleId;
             const moduleName = this.dataset.moduleName;
             const modulePrice = this.dataset.price;
@@ -45,13 +56,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // The rest of the script is for the cart.html page
     if (window.location.pathname.endsWith('cart.html')) {
         console.log('cart.js: on cart.html, rendering cart');
-        renderCartPage();
+        waitForStripe().then(() => {
+            renderCartPage();
+        });
     }
 });
 
 function renderCartPage() {
+    console.log('cart.js: renderCartPage function called.');
+    console.log('cart.js: Attempting to retrieve shoppingCart from localStorage for rendering.');
     let cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
-    console.log('cart.js: Initial cart state:', cart);
+    console.log('cart.js: Cart state for rendering:', cart);
 
     const cartItemsContainer = document.getElementById('cart-items');
     const cartTotalSpan = document.getElementById('cart-total');
@@ -69,14 +84,16 @@ function renderCartPage() {
     }
 
     function renderCart() {
-        console.log('cart.js: Rendering cart. Cart content:', cart);
+        console.log('cart.js: Starting renderCart function. Cart content:', cart);
         cartItemsContainer.innerHTML = '';
         let total = 0;
 
         if (cart.length === 0) {
+            console.log('cart.js: Cart is empty. Displaying empty message.');
             cartItemsContainer.innerHTML = '<p>Seu carrinho está vazio.</p>';
             checkoutButton.disabled = true;
         } else {
+            console.log('cart.js: Cart has items. Rendering items.');
             cart.forEach(item => {
                 const cartItemDiv = document.createElement('div');
                 cartItemDiv.classList.add('cart-item');
@@ -89,10 +106,12 @@ function renderCartPage() {
                 total += item.price;
             });
             checkoutButton.disabled = false;
+            console.log('cart.js: Finished rendering cart items.');
         }
 
         cartTotalSpan.textContent = `R$ ${total.toFixed(2)}`;
         attachRemoveListeners();
+        console.log('cart.js: Cart rendering complete. Total:', total.toFixed(2));
     }
 
     function attachRemoveListeners() {
@@ -117,9 +136,6 @@ function renderCartPage() {
             window.location.href = 'login.html';
             return;
         }
-
-        // Replace with your Stripe publishable key
-
 
         try {
             const response = await fetch('/api/create-checkout-session', {
