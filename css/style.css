@@ -12,7 +12,8 @@ body {
 
 /* Header Styles */
 .header {
-  background: grey; /* Removido fundo para o efeito do menu */
+  background: #001230;
+  opacity: 50%; /* Removido fundo para o efeito do menu */
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding: 1rem 0;
   position: fixed;
