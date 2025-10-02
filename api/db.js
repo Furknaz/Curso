@@ -61,7 +61,7 @@ const createTables = async () => {
 
 const populateCourses = async () => {
     const courses = [
-        { id: 'modulo1', title: 'Módulo 1: Contornar Objeções', price: 49.90 },
+        { id: 'modulo1', title: 'Módulo 1: Contornar Objeções', price: 0.50 },
         { id: 'modulo2', title: 'Módulo 2: Técnica de Vendas', price: 59.90 },
         { id: 'modulo3', title: 'Módulo 3: Técnicas de Persuasão', price: 49.90 },
         { id: 'modulo4', title: 'Módulo 4: Produtos', price: 69.90 },
