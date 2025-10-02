@@ -16,21 +16,28 @@ async function waitForStripe() {
     });
 }
 
-// Global addToCart function
+// Global addToCart function - UPDATED
 window.addToCart = function(moduleId, moduleName, modulePrice) {
+    const loggedInUser = localStorage.getItem('loggedInUser');
+
+    if (!loggedInUser) {
+        alert('Você precisa estar logado para comprar um produto.');
+        window.location.href = 'login.html';
+        return;
+    }
+    
     console.log(`addToCart function called for: ${moduleName} (${moduleId}, R$${modulePrice})`);
-    console.log('cart.js: Attempting to retrieve shoppingCart from localStorage.');
     let cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
-    console.log('cart.js: Current cart state from localStorage:', cart);
     const existingItem = cart.find(item => item.id === moduleId);
 
     if (existingItem) {
         console.log(`cart.js: Item already in cart: ${moduleName}`);
+        // If item is already there, just go to cart
+        window.location.href = 'cart.html';
         return;
     }
 
     cart.push({ id: moduleId, name: moduleName, price: parseFloat(modulePrice) });
-    console.log('cart.js: Item added to cart array. Saving to localStorage.');
     localStorage.setItem('shoppingCart', JSON.stringify(cart));
     console.log('cart.js: Item added to cart. New cart in localStorage:', JSON.parse(localStorage.getItem('shoppingCart')));
     console.log('cart.js: Redirecting to cart.html.');
@@ -39,28 +46,26 @@ window.addToCart = function(moduleId, moduleName, modulePrice) {
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('cart.js: DOMContentLoaded event fired.');
-    console.log('cart.js: Initial localStorage state:', JSON.parse(localStorage.getItem('shoppingCart')) || []);
 
     // Check if on index.html to attach add-to-cart button listeners
     if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
         console.log('cart.js: On index.html, attaching add-to-cart listeners.');
-        const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
-        console.log(`cart.js: Found ${addToCartButtons.length} 'add-to-cart-btn' buttons.`);
-        addToCartButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                console.log('cart.js: Add to cart button clicked.');
-                const moduleId = this.dataset.moduleId;
-                const moduleName = this.dataset.moduleName;
-                const modulePrice = this.dataset.price;
+        // Use a more robust event delegation pattern
+        document.body.addEventListener('click', function(event) {
+            const button = event.target.closest('.add-to-cart-btn');
+            if (button) {
+                console.log('cart.js: Add to cart button clicked via delegation.');
+                const moduleId = button.dataset.moduleId;
+                const moduleName = button.dataset.moduleName;
+                const modulePrice = button.dataset.price;
                 window.addToCart(moduleId, moduleName, modulePrice);
-            });
+            }
         });
     }
 
     // Check if on cart.html to render the cart
     if (window.location.pathname.endsWith('cart.html')) {
         console.log('cart.js: on cart.html, rendering cart');
-        console.log('cart.js: Current page origin:', window.location.origin); // Added for debugging
         waitForStripe().then(() => {
             renderCartPage();
         });
@@ -69,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function renderCartPage() {
     console.log('cart.js: renderCartPage function called.');
-    console.log('cart.js: Attempting to retrieve shoppingCart from localStorage for rendering.');
     let cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
     console.log('cart.js: Cart state for rendering:', cart);
 
