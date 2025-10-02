@@ -15,7 +15,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Define o Content Security Policy
+// Define o Content Security Policy (CSP)
 app.use((req, res, next) => {
   res.setHeader(
     'Content-Security-Policy',
@@ -30,22 +30,20 @@ app.use((req, res, next) => {
   next();
 });
 
-// --- ROTAS ---
+// --- ESTRUTURA DE ROTAS ---
 
-// 1. Rotas da API (devem vir primeiro)
-app.post('/api/login', (req, res) => loginHandler(req, res));
-app.post('/api/register', (req, res) => registerHandler(req, res));
-app.get('/api/get-user-courses', (req, res) => getUserCoursesHandler(req, res));
-app.post('/api/create-checkout-session', (req, res) => createCheckoutSessionHandler(req, res));
-app.post('/api/verify-payment', (req, res) => verifyPaymentHandler(req, res));
+// 1. Rotas da API: O servidor verifica estas primeiro.
+app.post('/api/login', loginHandler);
+app.post('/api/register', registerHandler);
+app.get('/api/get-user-courses', getUserCoursesHandler);
+app.post('/api/create-checkout-session', createCheckoutSessionHandler);
+app.post('/api/verify-payment', verifyPaymentHandler);
 
-// 2. Servir arquivos estáticos (CSS, JS, imagens, etc.)
-// Isso vai servir automaticamente arquivos como index.html, cart.html, etc.
+// 2. Servir Arquivos Estáticos: Se não for uma rota da API, o servidor procura por um arquivo correspondente (css, js, html).
 app.use(express.static(path.join(__dirname)));
 
-// 3. Rota "catch-all" para Single Page Applications (SPA)
-// Qualquer requisição GET que não seja para a API e não encontrou um arquivo estático,
-// receberá o index.html. Isso permite que o roteamento do lado do cliente funcione.
+// 3. Rota de Fallback (Catch-all): Se a requisição não corresponder a nenhuma rota da API ou arquivo estático,
+// ela será direcionada para o index.html. Isso é essencial para que a navegação interna (SPA) funcione.
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -56,4 +54,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
-
