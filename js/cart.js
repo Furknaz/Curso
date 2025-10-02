@@ -39,6 +39,7 @@ window.addToCart = function(moduleId, moduleName, modulePrice) {
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('cart.js: DOMContentLoaded event fired.');
+    localStorage.removeItem('shoppingCart'); // TEMPORARY: Ensure cart is empty for debugging
     console.log('cart.js: Initial localStorage state:', JSON.parse(localStorage.getItem('shoppingCart')) || []);
 
     // Check if on index.html to attach add-to-cart button listeners
