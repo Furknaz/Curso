@@ -39,6 +39,7 @@ window.addToCart = function(moduleId, moduleName, modulePrice) {
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('cart.js: DOMContentLoaded event fired.');
+    console.log('cart.js: Initial localStorage state:', JSON.parse(localStorage.getItem('shoppingCart')) || []);
 
     // Check if on index.html to attach add-to-cart button listeners
     if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
