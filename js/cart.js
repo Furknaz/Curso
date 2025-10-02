@@ -6,20 +6,6 @@
 let stripe;
 
 /**
- * Função para garantir que o script do Stripe seja carregado antes de usá-lo.
- * A chave publicável do Stripe é inserida diretamente aqui.
- */
-async function initializeStripe() {
-    if (!stripe) {
-        try {
-            stripe = Stripe('pk_test_51SAVZF4G62TEORgEfogL0XbHImRC9KDwB4xUGqlBpWtmvAhZml4vfWL9YgNGIUYERNCrGvlj9wQADjCVYUHn648j00ppoPHDqR');
-        } catch (e) {
-            console.error('Falha ao inicializar o Stripe. Verifique a chave e a conexão.', e);
-        }
-    }
-}
-
-/**
  * Ponto de entrada do script. É executado quando o DOM está totalmente carregado.
  * Direciona a execução com base na página atual.
  */
@@ -31,9 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setupAddToCartButtons();
     }
 
-    // Se estiver na página do carrinho, inicializa o Stripe e renderiza o carrinho.
+    // Se estiver na página do carrinho, renderiza o carrinho.
     if (currentPage.endsWith('cart.html')) {
-        initializeStripe();
         renderCartPage();
     }
 });
@@ -45,11 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /**
  * Adiciona os "event listeners" a todos os botões de "Comprar" na página inicial.
- * Utiliza a delegação de eventos para maior eficiência.
  */
 function setupAddToCartButtons() {
     document.body.addEventListener('click', function(event) {
-        // Verifica se o clique foi em um botão que deve adicionar ao carrinho
         const buyButton = event.target.closest('.add-to-cart-btn');
         if (buyButton) {
             const card = buyButton.closest('.streaming-card');
@@ -67,8 +50,8 @@ function setupAddToCartButtons() {
 /**
  * Lida com a lógica de adicionar um item ao carrinho.
  * 1. Verifica se o usuário está logado.
- * 2. Se não estiver, redireciona para a página de login.
- * 3. Se estiver logado, adiciona o item ao localStorage e redireciona para o carrinho.
+ * 2. Se não, redireciona para a página de login.
+ * 3. Se sim, adiciona o item ao localStorage e redireciona para o carrinho.
  */
 function handleAddToCart(moduleId, moduleName, modulePrice) {
     if (!isLoggedIn()) {
@@ -106,17 +89,14 @@ function renderCartPage() {
     const cartTotalSpan = document.getElementById('cart-total');
     const checkoutButton = document.getElementById('checkout-button');
 
-    // Garante que os elementos essenciais da página existam
     if (!cartItemsContainer || !cartTotalSpan || !checkoutButton) {
         console.error('Elementos essenciais do carrinho não encontrados na página.');
         return;
     }
 
-    // Limpa o estado visual anterior
     cartItemsContainer.innerHTML = '';
     let currentTotal = 0;
 
-    // Renderiza a mensagem de carrinho vazio ou os itens do carrinho
     if (cart.length === 0) {
         cartItemsContainer.innerHTML = '<p>Seu carrinho está vazio.</p>';
         checkoutButton.disabled = true;
@@ -135,7 +115,6 @@ function renderCartPage() {
         checkoutButton.disabled = false;
     }
 
-    // Atualiza o valor total e anexa os listeners dos botões
     cartTotalSpan.textContent = `R$ ${currentTotal.toFixed(2)}`;
     setupCartActionButtons();
 }
@@ -144,24 +123,16 @@ function renderCartPage() {
  * Configura os "event listeners" para os botões "Remover" e "Finalizar Compra".
  */
 function setupCartActionButtons() {
-    // Botões "Remover"
-    document.querySelectorAll('.remove-from-cart').forEach(button => {
-        // Remove listeners antigos para evitar duplicação
-        button.replaceWith(button.cloneNode(true));
-    });
     document.getElementById('cart-items').addEventListener('click', function(event) {
         if (event.target.classList.contains('remove-from-cart')) {
             const moduleId = event.target.dataset.moduleId;
             let currentCart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
             currentCart = currentCart.filter(item => item.id !== moduleId);
             localStorage.setItem('shoppingCart', JSON.stringify(currentCart));
-            renderCartPage(); // Re-renderiza a página com o carrinho atualizado
+            renderCartPage();
         }
     });
 
-    // Botão "Finalizar Compra"
-    const checkoutButton = document.getElementById('checkout-button');
-    checkoutButton.replaceWith(checkoutButton.cloneNode(true)); // Limpa listeners antigos
     document.getElementById('checkout-button').addEventListener('click', handleCheckout);
 }
 
@@ -174,6 +145,18 @@ async function handleCheckout() {
         alert('Sua sessão expirou. Por favor, faça login novamente para finalizar a compra.');
         window.location.href = 'login.html';
         return;
+    }
+
+    // Inicializa o Stripe SÓ QUANDO NECESSÁRIO
+    if (!stripe) {
+        try {
+            // A variável 'Stripe' vem do script <script src="https://js.stripe.com/v3/"></script>
+            stripe = Stripe('pk_test_51SAVZF4G62TEORgEfogL0XbHImRC9KDwB4xUGqlBpWtmvAhZml4vfWL9YgNGIUYERNCrGvlj9wQADjCVYUHn648j00ppoPHDqR');
+        } catch (e) {
+            console.error('Erro: O script do Stripe não foi carregado corretamente.', e);
+            alert('Erro ao carregar o sistema de pagamento. Por favor, verifique sua conexão com a internet e recarregue a página.');
+            return;
+        }
     }
 
     const cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
@@ -195,11 +178,6 @@ async function handleCheckout() {
         }
 
         const { sessionId } = await response.json();
-        
-        if (!stripe) {
-            await initializeStripe();
-        }
-
         const { error } = await stripe.redirectToCheckout({ sessionId });
 
         if (error) {
@@ -225,3 +203,4 @@ function getLoggedInUser() {
     return null;
   }
 }
+
