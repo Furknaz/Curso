@@ -1,8 +1,19 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('cart.js: DOMContentLoaded');
 
-    // Replace with your Stripe publishable key
-    const stripe = Stripe('pk_test_51SAVZF4G62TEORgEfogL0XbHImRC9KDwB4xUGqlBpWtmvAhZml4vfWL9YgNGIUYERNCrGvlj9wQADjCVYUHn648j00ppoPHDqR');
+    let stripe;
+
+    function initializeStripe() {
+        if (window.Stripe) {
+            stripe = Stripe('pk_test_51SAVZF4G62TEORgEfogL0XbHImRC9KDwB4xUGqlBpWtmvAhZml4vfWL9YgNGIUYERNCrGvlj9wQADjCVYUHn648j00ppoPHDqR');
+            console.log('Stripe initialized successfully.');
+        } else {
+            console.log('Stripe.js not yet loaded, retrying...');
+            setTimeout(initializeStripe, 100);
+        }
+    }
+
+    initializeStripe();
 
     // Global addToCart function
     window.addToCart = function(moduleId, moduleName, modulePrice) {
@@ -22,9 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Add to cart button event listener
-    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
-    console.log('cart.js: Found add-to-cart-btn elements:', addToCartButtons.length, addToCartButtons);
-    addToCartButtons.forEach(button => {
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
         button.addEventListener('click', function() {
             const moduleId = this.dataset.moduleId;
             const moduleName = this.dataset.moduleName;
