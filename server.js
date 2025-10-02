@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
-// Importa as rotas da API
+// 1. Importação das rotas da API
 const loginHandler = require('./api/login');
 const registerHandler = require('./api/register');
 const getUserCoursesHandler = require('./api/get-user-courses');
@@ -11,11 +11,11 @@ const verifyPaymentHandler = require('./api/verify-payment');
 
 const app = express();
 
-// Middlewares
+// 2. Middlewares essenciais
 app.use(cors());
 app.use(express.json());
 
-// Define o Content Security Policy (CSP)
+// 3. Definição da Política de Segurança de Conteúdo (CSP)
 app.use((req, res, next) => {
   res.setHeader(
     'Content-Security-Policy',
@@ -30,26 +30,25 @@ app.use((req, res, next) => {
   next();
 });
 
-// --- ESTRUTURA DE ROTAS ---
-
-// 1. Rotas da API: O servidor verifica estas primeiro.
+// 4. Definição das rotas específicas da API
 app.post('/api/login', loginHandler);
 app.post('/api/register', registerHandler);
 app.get('/api/get-user-courses', getUserCoursesHandler);
 app.post('/api/create-checkout-session', createCheckoutSessionHandler);
 app.post('/api/verify-payment', verifyPaymentHandler);
 
-// 2. Servir Arquivos Estáticos: Se não for uma rota da API, o servidor procura por um arquivo correspondente (css, js, html).
+// 5. Servir os arquivos estáticos (HTML, CSS, JS do cliente, imagens)
 app.use(express.static(path.join(__dirname)));
 
-// 3. Rota de Fallback (Catch-all): Se a requisição não corresponder a nenhuma rota da API ou arquivo estático,
-// ela será direcionada para o index.html. Isso é essencial para que a navegação interna (SPA) funcione.
-app.get('*', (req, res) => {
+// 6. Rota de Fallback (Catch-all) com Expressão Regular
+//    Esta sintaxe é mais explícita e resolve o erro "PathError".
+//    Ela garante que qualquer rota GET não capturada acima sirva o app principal.
+app.get(/^(?!\/api).*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 
-// --- INICIALIZAÇÃO DO SERVIDOR ---
+// 7. Inicialização do Servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
