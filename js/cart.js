@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Global addToCart function
     window.addToCart = function(moduleId, moduleName, modulePrice) {
-        console.log('cart.js: window.addToCart called');
         console.log(`addToCart function called for: ${moduleName} (${moduleId}, R$${modulePrice})`);
         let cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
         const existingItem = cart.find(item => item.id === moduleId);
