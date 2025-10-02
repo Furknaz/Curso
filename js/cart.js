@@ -1,175 +1,227 @@
+// =================================================================================
+// FUNÇÕES GLOBAIS E DE INICIALIZAÇÃO
+// =================================================================================
+
+// Variável global para a instância do Stripe, inicializada quando necessário.
 let stripe;
 
-async function waitForStripe() {
-    return new Promise(resolve => {
-        const checkStripe = () => {
-            if (window.Stripe) {
-                stripe = Stripe('pk_test_51SAVZF4G62TEORgEfogL0XbHImRC9KDwB4xUGqlBpWtmvAhZml4vfWL9YgNGIUYERNCrGvlj9wQADjCVYUHn648j00ppoPHDqR');
-                console.log('Stripe initialized successfully.');
-                resolve();
-            } else {
-                console.log('Stripe.js not yet loaded, retrying...');
-                setTimeout(checkStripe, 100);
+/**
+ * Função para garantir que o script do Stripe seja carregado antes de usá-lo.
+ * A chave publicável do Stripe é inserida diretamente aqui.
+ */
+async function initializeStripe() {
+    if (!stripe) {
+        try {
+            stripe = Stripe('pk_test_51SAVZF4G62TEORgEfogL0XbHImRC9KDwB4xUGqlBpWtmvAhZml4vfWL9YgNGIUYERNCrGvlj9wQADjCVYUHn648j00ppoPHDqR');
+        } catch (e) {
+            console.error('Falha ao inicializar o Stripe. Verifique a chave e a conexão.', e);
+        }
+    }
+}
+
+/**
+ * Ponto de entrada do script. É executado quando o DOM está totalmente carregado.
+ * Direciona a execução com base na página atual.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    const currentPage = window.location.pathname;
+
+    // Se estiver na página inicial, configura os botões de "Comprar".
+    if (currentPage.endsWith('/') || currentPage.endsWith('index.html')) {
+        setupAddToCartButtons();
+    }
+
+    // Se estiver na página do carrinho, inicializa o Stripe e renderiza o carrinho.
+    if (currentPage.endsWith('cart.html')) {
+        initializeStripe();
+        renderCartPage();
+    }
+});
+
+
+// =================================================================================
+// LÓGICA DA PÁGINA INICIAL (index.html)
+// =================================================================================
+
+/**
+ * Adiciona os "event listeners" a todos os botões de "Comprar" na página inicial.
+ * Utiliza a delegação de eventos para maior eficiência.
+ */
+function setupAddToCartButtons() {
+    document.body.addEventListener('click', function(event) {
+        // Verifica se o clique foi em um botão que deve adicionar ao carrinho
+        const buyButton = event.target.closest('.add-to-cart-btn');
+        if (buyButton) {
+            const card = buyButton.closest('.streaming-card');
+            if (card) {
+                const moduleId = card.dataset.moduleId;
+                const moduleName = card.querySelector('.card-title').textContent;
+                const modulePrice = card.dataset.price;
+                
+                handleAddToCart(moduleId, moduleName, modulePrice);
             }
-        };
-        checkStripe();
+        }
     });
 }
 
-// Global addToCart function - UPDATED
-window.addToCart = function(moduleId, moduleName, modulePrice) {
-    const loggedInUser = localStorage.getItem('loggedInUser');
-
-    if (!loggedInUser) {
+/**
+ * Lida com a lógica de adicionar um item ao carrinho.
+ * 1. Verifica se o usuário está logado.
+ * 2. Se não estiver, redireciona para a página de login.
+ * 3. Se estiver logado, adiciona o item ao localStorage e redireciona para o carrinho.
+ */
+function handleAddToCart(moduleId, moduleName, modulePrice) {
+    if (!isLoggedIn()) {
         alert('Você precisa estar logado para comprar um produto.');
         window.location.href = 'login.html';
         return;
     }
-    
-    console.log(`addToCart function called for: ${moduleName} (${moduleId}, R$${modulePrice})`);
-    let cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
-    const existingItem = cart.find(item => item.id === moduleId);
 
-    if (existingItem) {
-        console.log(`cart.js: Item already in cart: ${moduleName}`);
-        // If item is already there, just go to cart
-        window.location.href = 'cart.html';
-        return;
+    let cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
+    const isAlreadyInCart = cart.some(item => item.id === moduleId);
+
+    if (!isAlreadyInCart) {
+        cart.push({
+            id: moduleId,
+            name: moduleName,
+            price: parseFloat(modulePrice)
+        });
+        localStorage.setItem('shoppingCart', JSON.stringify(cart));
     }
 
-    cart.push({ id: moduleId, name: moduleName, price: parseFloat(modulePrice) });
-    localStorage.setItem('shoppingCart', JSON.stringify(cart));
-    console.log('cart.js: Item added to cart. New cart in localStorage:', JSON.parse(localStorage.getItem('shoppingCart')));
-    console.log('cart.js: Redirecting to cart.html.');
     window.location.href = 'cart.html';
-};
+}
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('cart.js: DOMContentLoaded event fired.');
 
-    // Check if on index.html to attach add-to-cart button listeners
-    if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
-        console.log('cart.js: On index.html, attaching add-to-cart listeners.');
-        // Use a more robust event delegation pattern
-        document.body.addEventListener('click', function(event) {
-            const button = event.target.closest('.add-to-cart-btn');
-            if (button) {
-                console.log('cart.js: Add to cart button clicked via delegation.');
-                const moduleId = button.dataset.moduleId;
-                const moduleName = button.dataset.moduleName;
-                const modulePrice = button.dataset.price;
-                window.addToCart(moduleId, moduleName, modulePrice);
-            }
-        });
-    }
+// =================================================================================
+// LÓGICA DA PÁGINA DO CARRINHO (cart.html)
+// =================================================================================
 
-    // Check if on cart.html to render the cart
-    if (window.location.pathname.endsWith('cart.html')) {
-        console.log('cart.js: on cart.html, rendering cart');
-        waitForStripe().then(() => {
-            renderCartPage();
-        });
-    }
-});
-
+/**
+ * Função principal que renderiza todo o conteúdo da página do carrinho.
+ */
 function renderCartPage() {
-    console.log('cart.js: renderCartPage function called.');
-    let cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
-    console.log('cart.js: Cart state for rendering:', cart);
-
+    const cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
     const cartItemsContainer = document.getElementById('cart-items');
     const cartTotalSpan = document.getElementById('cart-total');
     const checkoutButton = document.getElementById('checkout-button');
 
+    // Garante que os elementos essenciais da página existam
     if (!cartItemsContainer || !cartTotalSpan || !checkoutButton) {
-        console.error('Error: One or more cart elements not found on cart.html.');
+        console.error('Elementos essenciais do carrinho não encontrados na página.');
         return;
     }
 
-    function saveCart() {
-        localStorage.setItem('shoppingCart', JSON.stringify(cart));
-        console.log('cart.js: Cart saved. Current cart:', cart);
-        renderCart();
-    }
+    // Limpa o estado visual anterior
+    cartItemsContainer.innerHTML = '';
+    let currentTotal = 0;
 
-    function renderCart() {
-        console.log('cart.js: Starting renderCart function. Cart content:', cart);
-        cartItemsContainer.innerHTML = '';
-        let total = 0;
-
-        if (cart.length === 0) {
-            console.log('cart.js: Cart is empty. Displaying empty message.');
-            cartItemsContainer.innerHTML = '<p>Seu carrinho está vazio.</p>';
-            checkoutButton.disabled = true;
-        } else {
-            console.log('cart.js: Cart has items. Rendering items.');
-            cart.forEach(item => {
-                const cartItemDiv = document.createElement('div');
-                cartItemDiv.classList.add('cart-item');
-                cartItemDiv.innerHTML = `
-                    <span class="cart-item-name">${item.name}</span>
-                    <span class="cart-item-price">R$ ${item.price.toFixed(2)}</span>
-                    <button class="remove-from-cart" data-module-id="${item.id}">Remover</button>
-                `;
-                cartItemsContainer.appendChild(cartItemDiv);
-                total += item.price;
-            });
-            checkoutButton.disabled = false;
-            console.log('cart.js: Finished rendering cart items.');
-        }
-
-        cartTotalSpan.textContent = `R$ ${total.toFixed(2)}`;
-        attachRemoveListeners();
-        console.log('cart.js: Cart rendering complete. Total:', total.toFixed(2));
-    }
-
-    function attachRemoveListeners() {
-        document.querySelectorAll('.remove-from-cart').forEach(button => {
-            button.addEventListener('click', function() {
-                const moduleId = this.dataset.moduleId;
-                removeFromCart(moduleId);
-            });
+    // Renderiza a mensagem de carrinho vazio ou os itens do carrinho
+    if (cart.length === 0) {
+        cartItemsContainer.innerHTML = '<p>Seu carrinho está vazio.</p>';
+        checkoutButton.disabled = true;
+    } else {
+        cart.forEach(item => {
+            currentTotal += item.price;
+            const itemElement = document.createElement('div');
+            itemElement.classList.add('cart-item');
+            itemElement.innerHTML = `
+                <span class="cart-item-name">${item.name}</span>
+                <span class="cart-item-price">R$ ${item.price.toFixed(2)}</span>
+                <button class="remove-from-cart" data-module-id="${item.id}">Remover</button>
+            `;
+            cartItemsContainer.appendChild(itemElement);
         });
+        checkoutButton.disabled = false;
     }
 
-    function removeFromCart(moduleId) {
-        console.log('cart.js: Removing item:', moduleId);
-        cart = cart.filter(item => item.id !== moduleId);
-        saveCart();
+    // Atualiza o valor total e anexa os listeners dos botões
+    cartTotalSpan.textContent = `R$ ${currentTotal.toFixed(2)}`;
+    setupCartActionButtons();
+}
+
+/**
+ * Configura os "event listeners" para os botões "Remover" e "Finalizar Compra".
+ */
+function setupCartActionButtons() {
+    // Botões "Remover"
+    document.querySelectorAll('.remove-from-cart').forEach(button => {
+        // Remove listeners antigos para evitar duplicação
+        button.replaceWith(button.cloneNode(true));
+    });
+    document.getElementById('cart-items').addEventListener('click', function(event) {
+        if (event.target.classList.contains('remove-from-cart')) {
+            const moduleId = event.target.dataset.moduleId;
+            let currentCart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
+            currentCart = currentCart.filter(item => item.id !== moduleId);
+            localStorage.setItem('shoppingCart', JSON.stringify(currentCart));
+            renderCartPage(); // Re-renderiza a página com o carrinho atualizado
+        }
+    });
+
+    // Botão "Finalizar Compra"
+    const checkoutButton = document.getElementById('checkout-button');
+    checkoutButton.replaceWith(checkoutButton.cloneNode(true)); // Limpa listeners antigos
+    document.getElementById('checkout-button').addEventListener('click', handleCheckout);
+}
+
+/**
+ * Lida com o processo de checkout, criando uma sessão no Stripe e redirecionando.
+ */
+async function handleCheckout() {
+    const user = getLoggedInUser();
+    if (!user) {
+        alert('Sua sessão expirou. Por favor, faça login novamente para finalizar a compra.');
+        window.location.href = 'login.html';
+        return;
     }
 
-    checkoutButton.onclick = async function() {
-        const loggedInUser = localStorage.getItem('loggedInUser');
-        if (!loggedInUser) {
-            alert('Você precisa estar logado para finalizar a compra.');
-            window.location.href = 'login.html';
-            return;
+    const cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
+    if (cart.length === 0) {
+        alert('Seu carrinho está vazio.');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/create-checkout-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: cart, user: user }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Falha ao criar a sessão de checkout.');
         }
 
-        try {
-            const response = await fetch('/api/create-checkout-session', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ items: cart, user: JSON.parse(loggedInUser) }),
-            });
-
-            const { sessionId } = await response.json();
-
-            const { error } = await stripe.redirectToCheckout({
-                sessionId: sessionId,
-            });
-
-            if (error) {
-                console.error('Error redirecting to checkout:', error);
-                alert('Ocorreu um erro ao redirecionar para o pagamento.');
-            }
-        } catch (error) {
-            console.error('Error during checkout:', error);
-            alert('Ocorreu um erro ao finalizar a compra.');
+        const { sessionId } = await response.json();
+        
+        if (!stripe) {
+            await initializeStripe();
         }
-    };
 
-    renderCart(); // Initial render when the page loads
+        const { error } = await stripe.redirectToCheckout({ sessionId });
+
+        if (error) {
+            console.error('Erro ao redirecionar para o Stripe:', error);
+            alert('Não foi possível redirecionar para o pagamento. Tente novamente.');
+        }
+    } catch (err) {
+        console.error('Erro no processo de checkout:', err);
+        alert('Ocorreu um erro ao processar seu pedido. Tente novamente mais tarde.');
+    }
+}
+
+// Funções de utilidade que dependem de `auth.js`
+// É esperado que `auth.js` seja carregado antes deste script.
+function isLoggedIn() {
+  return !!localStorage.getItem('loggedInUser');
+}
+
+function getLoggedInUser() {
+  try {
+    return JSON.parse(localStorage.getItem('loggedInUser'));
+  } catch (e) {
+    return null;
+  }
 }
