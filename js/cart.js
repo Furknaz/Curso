@@ -22,7 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Add to cart button event listener
-    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+    console.log('cart.js: Found add-to-cart-btn elements:', addToCartButtons.length, addToCartButtons);
+    addToCartButtons.forEach(button => {
         button.addEventListener('click', function() {
             const moduleId = this.dataset.moduleId;
             const moduleName = this.dataset.moduleName;
