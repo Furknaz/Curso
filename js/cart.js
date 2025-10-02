@@ -40,20 +40,23 @@ window.addToCart = function(moduleId, moduleName, modulePrice) {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('cart.js: DOMContentLoaded event fired.');
 
-    // Add to cart button event listener
-    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
-    console.log(`cart.js: Found ${addToCartButtons.length} 'add-to-cart-btn' buttons.`);
-    addToCartButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            console.log('cart.js: Add to cart button clicked.');
-            const moduleId = this.dataset.moduleId;
-            const moduleName = this.dataset.moduleName;
-            const modulePrice = this.dataset.price;
-            window.addToCart(moduleId, moduleName, modulePrice);
+    // Check if on index.html to attach add-to-cart button listeners
+    if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+        console.log('cart.js: On index.html, attaching add-to-cart listeners.');
+        const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+        console.log(`cart.js: Found ${addToCartButtons.length} 'add-to-cart-btn' buttons.`);
+        addToCartButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                console.log('cart.js: Add to cart button clicked.');
+                const moduleId = this.dataset.moduleId;
+                const moduleName = this.dataset.moduleName;
+                const modulePrice = this.dataset.price;
+                window.addToCart(moduleId, moduleName, modulePrice);
+            });
         });
-    });
+    }
 
-    // The rest of the script is for the cart.html page
+    // Check if on cart.html to render the cart
     if (window.location.pathname.endsWith('cart.html')) {
         console.log('cart.js: on cart.html, rendering cart');
         waitForStripe().then(() => {
