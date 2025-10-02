@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Global addToCart function
     window.addToCart = function(moduleId, moduleName, modulePrice) {
+        console.log('cart.js: window.addToCart called');
         console.log(`addToCart function called for: ${moduleName} (${moduleId}, R$${modulePrice})`);
         let cart = JSON.parse(localStorage.getItem('shoppingCart')) || [];
         const existingItem = cart.find(item => item.id === moduleId);
@@ -23,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add to cart button event listener
     document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-        console.log('cart.js: Attaching click listener to add-to-cart-btn', button);
         button.addEventListener('click', function() {
             const moduleId = this.dataset.moduleId;
             const moduleName = this.dataset.moduleName;
