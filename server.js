@@ -15,7 +15,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Define o Content Security Policy (ATUALIZADO E CORRIGIDO)
+// Define o Content Security Policy
 app.use((req, res, next) => {
   res.setHeader(
     'Content-Security-Policy',
@@ -30,34 +30,29 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.static(path.join(__dirname))); // Serve arquivos estáticos da raiz
+// --- ROTAS ---
 
-// Rotas da API
+// 1. Rotas da API (devem vir primeiro)
 app.post('/api/login', (req, res) => loginHandler(req, res));
 app.post('/api/register', (req, res) => registerHandler(req, res));
 app.get('/api/get-user-courses', (req, res) => getUserCoursesHandler(req, res));
 app.post('/api/create-checkout-session', (req, res) => createCheckoutSessionHandler(req, res));
 app.post('/api/verify-payment', (req, res) => verifyPaymentHandler(req, res));
 
-// Rota para servir o index.html na raiz
-app.get('/', (req, res) => {
+// 2. Servir arquivos estáticos (CSS, JS, imagens, etc.)
+// Isso vai servir automaticamente arquivos como index.html, cart.html, etc.
+app.use(express.static(path.join(__dirname)));
+
+// 3. Rota "catch-all" para Single Page Applications (SPA)
+// Qualquer requisição GET que não seja para a API e não encontrou um arquivo estático,
+// receberá o index.html. Isso permite que o roteamento do lado do cliente funcione.
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Tratamento genérico para outras rotas (importante para Vercel)
-app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api/')) {
-        const filePath = path.join(__dirname, req.path);
-        res.sendFile(filePath, err => {
-            if (err) {
-                res.status(404).sendFile(path.join(__dirname, 'index.html'));
-            }
-        });
-    }
-});
 
+// --- INICIALIZAÇÃO DO SERVIDOR ---
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
