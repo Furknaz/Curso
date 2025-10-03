@@ -1110,18 +1110,6 @@ body {
   text-align: center;
   transition: color 0.2s;
 }
-.close {
-  position: absolute;
-  top: 5px;
-  right: 10px;
-  color: #fff;
-  font-size: 40px;
-  font-weight: bold;
-  cursor: pointer;
-  z-index: 1001;
-  text-align: center;
-  transition: color 0.2s;
-}
 
 .close:hover {
   color: #ccc;
