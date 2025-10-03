@@ -1175,11 +1175,10 @@ body {
 .modal-meta .genre,
 .modal-meta .category {
   color: #fff;
-}
-
-.modal-meta .category + .category::before {
-  content: '|';
-  margin: 0 10px;
+  border: 1px solid #fff;
+  padding: 2px 8px;
+  border-radius: 3px;
+  margin-right: 10px; /* Add some spacing between tags */
 }
 
 .modal-info p {
