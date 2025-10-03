@@ -1153,7 +1153,7 @@ body {
 
 .modal-meta {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 15px;
   margin-bottom: 20px;
   flex-wrap: wrap;
