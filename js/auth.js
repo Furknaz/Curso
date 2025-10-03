@@ -108,6 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const loginLink = document.getElementById('loginLink');
   const registerLink = document.getElementById('registerLink');
   const logoutLink = document.getElementById('logoutLink');
+  const profileIcon = document.querySelector('.profile-icon');
 
   if (profileButton && profileDropdownContent) {
     profileButton.addEventListener('click', function() {
@@ -127,6 +128,15 @@ document.addEventListener('DOMContentLoaded', function() {
         loginLink.style.display = 'none';
         registerLink.style.display = 'none';
         logoutLink.style.display = 'block';
+
+        // Load profile picture
+        const user = getLoggedInUser();
+        if (user && profileIcon) {
+            let userProfilePicture = localStorage.getItem(`${user.email}_profilePicture`);
+            if (userProfilePicture) {
+                profileIcon.src = userProfilePicture;
+            }
+        }
       } else {
         loginLink.style.display = 'block';
         registerLink.style.display = 'block';
