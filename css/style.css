@@ -1153,10 +1153,10 @@ body {
 
 .modal-meta {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  gap: 15px;
+  gap: 10px; /* Adjusted gap for vertical spacing */
   margin-bottom: 20px;
-  flex-wrap: wrap;
 }
 
 .modal-meta span {
