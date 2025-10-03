@@ -1172,13 +1172,16 @@ body {
   font-size: 14px;
 }
 
-.modal-meta .genre,
 .modal-meta .category {
   color: #fff;
   border: 1px solid #fff;
   padding: 2px 8px;
   border-radius: 3px;
   margin-right: 10px; /* Add some spacing between tags */
+}
+
+.modal-meta .genre {
+  color: #fff;
 }
 
 .modal-info p {
