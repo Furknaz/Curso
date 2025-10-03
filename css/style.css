@@ -1101,13 +1101,14 @@ body {
 
 .close {
   position: absolute;
-  top: 20px;
-  right: 25px;
+  top: 15px;
+  right: 20px;
   color: #fff;
   font-size: 40px;
   font-weight: bold;
   cursor: pointer;
   z-index: 1001;
+  text-align: center;
   transition: color 0.2s;
 }
 
