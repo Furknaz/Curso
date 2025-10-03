@@ -1101,25 +1101,18 @@ body {
 
 .close {
   position: absolute;
-  top: 15px;
-  right: 20px;
+  top: 20px;
+  right: 25px;
   color: #fff;
-  font-size: 35px;
+  font-size: 40px;
   font-weight: bold;
   cursor: pointer;
   z-index: 1001;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: rgba(42, 42, 42, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s;
+  transition: color 0.2s;
 }
 
 .close:hover {
-  background-color: rgba(42, 42, 42, 1);
+  color: #ccc;
 }
 
 .modal-header {
