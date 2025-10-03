@@ -1177,6 +1177,11 @@ body {
   color: #fff;
 }
 
+.modal-meta .category + .category::before {
+  content: '|';
+  margin: 0 10px;
+}
+
 .modal-info p {
   font-size: 18px;
   line-height: 1.6;
